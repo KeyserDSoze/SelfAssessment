@@ -104,6 +104,10 @@ export async function downloadResultCsv(
   }
 
   const header = [
+    'Organization',
+    'Session',
+    'Participants',
+    'Facilitator',
     'Area',
     'Track',
     'Question',
@@ -117,6 +121,10 @@ export async function downloadResultCsv(
   ];
 
   const rows = result.scoredQuestions.map((item) => [
+    run.context?.organization ?? '',
+    run.context?.sessionName ?? '',
+    run.context?.participants ?? '',
+    run.context?.facilitator ?? '',
     localized(item.question.area, locale),
     item.question.track,
     localized(item.question.question, locale),
@@ -172,6 +180,15 @@ export async function downloadResultHtml(
     )
     .join('');
 
+  const contextSummary = run.context
+    ? `<div class="context">
+        ${run.context.organization ? `<div><strong>Organization:</strong> ${escapeHtml(run.context.organization)}</div>` : ''}
+        ${run.context.sessionName ? `<div><strong>Session:</strong> ${escapeHtml(run.context.sessionName)}</div>` : ''}
+        ${run.context.participants ? `<div><strong>Participants:</strong> ${escapeHtml(run.context.participants)}</div>` : ''}
+        ${run.context.facilitator ? `<div><strong>Facilitator:</strong> ${escapeHtml(run.context.facilitator)}</div>` : ''}
+      </div>`
+    : '';
+
   const attachmentSummary =
     attachments.length > 0
       ? `<p>${attachments.length} evidence attachment(s) are referenced in this report. Binary files are included in the JSON result export and full workspace backup.</p>`
@@ -184,13 +201,14 @@ export async function downloadResultHtml(
 <title>${escapeHtml(title)} — SelfAssessment</title>
 <style>
 body{font-family:Inter,Arial,sans-serif;margin:40px;color:#152238}
-h1{margin-bottom:4px}.muted{color:#667085}.score{font-size:48px;font-weight:800;margin:24px 0}
+h1{margin-bottom:4px}.muted{color:#667085}.score{font-size:48px;font-weight:800;margin:24px 0}.context{margin:18px 0;padding:14px;background:#f5f7fa;border-radius:10px}.context div{margin:4px 0}
 table{width:100%;border-collapse:collapse;margin-top:28px}th,td{border:1px solid #dfe3e8;padding:10px;text-align:left;vertical-align:top}th{background:#f5f7fa}
 </style>
 </head>
 <body>
 <h1>${escapeHtml(title)}</h1>
 <div class="muted">SelfAssessment.tech · ${escapeHtml(run.updatedAt)}</div>
+${contextSummary}
 <div class="score">${result.overallScore?.toFixed(1) ?? '—'} / 5</div>
 <p>${result.answeredCount}/${result.totalCount} answered · ${result.completionPercent}% complete · ${result.unknownCount} unknown</p>
 ${attachmentSummary}
