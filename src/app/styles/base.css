@@ -95,3 +95,5 @@ h3 { letter-spacing: -.02em; }
 .button.secondary { background: var(--surface); border-color: var(--border); }
 .button.ghost { background: transparent; border-color: var(--border); }
 .button.large { min-height: 52px; padding: 0 22px; }
+.button.danger-button { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); }
+.button.danger-button:hover { background: color-mix(in srgb, var(--danger) 8%, transparent); }
