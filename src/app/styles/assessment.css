@@ -61,3 +61,91 @@
 .notes-field textarea { width: 100%; resize: vertical; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 13px 14px; outline: none; }
 .notes-field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent); }
 .runner-nav { margin-top: 18px; }
+
+.evidence-attachments {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface-2);
+}
+
+.evidence-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.evidence-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.evidence-heading small {
+  display: block;
+  margin-top: 5px;
+  max-width: 650px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.evidence-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.evidence-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.evidence-file strong,
+.evidence-file span {
+  display: block;
+}
+
+.evidence-file strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.evidence-file span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.evidence-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.evidence-message {
+  margin: 10px 0 0;
+  color: var(--warning);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .evidence-heading,
+  .evidence-file {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .evidence-actions {
+    justify-content: flex-end;
+  }
+}
