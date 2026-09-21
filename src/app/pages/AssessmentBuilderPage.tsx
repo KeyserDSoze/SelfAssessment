@@ -94,7 +94,7 @@ export function AssessmentBuilderPage() {
       setQuestions(current.questions);
       setMessage(t('builder.editLoaded'));
     });
-  }, [editId, t]);
+  }, [editId]);
 
   const resolvedId = useMemo(
     () => slugify(id || titleEn || titleIt),
