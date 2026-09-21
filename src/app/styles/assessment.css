@@ -149,3 +149,112 @@
     justify-content: flex-end;
   }
 }
+
+.question-map-shell {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.question-map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 11px;
+}
+
+.question-map-heading > strong {
+  font-size: 12px;
+}
+
+.question-map-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.question-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.legend-dot.answered {
+  background: var(--success);
+}
+
+.legend-dot.unknown {
+  background: var(--warning);
+}
+
+.legend-dot.unanswered {
+  background: var(--border-strong);
+}
+
+.question-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  gap: 6px;
+}
+
+.question-map-button {
+  min-width: 0;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 850;
+  transition: .15s ease;
+}
+
+.question-map-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.question-map-button.answered {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+}
+
+.question-map-button.unknown {
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--warning) 35%, var(--border));
+}
+
+.question-map-button.current {
+  color: white;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+@media (max-width: 640px) {
+  .question-map-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .question-map {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
