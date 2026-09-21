@@ -1,0 +1,25 @@
+.metric-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.metric-card { min-height: 178px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); }
+.metric-card span { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.metric-card strong { font-size: clamp(2.6rem, 5vw, 4.1rem); letter-spacing: -.06em; }
+.metric-card strong small { font-size: 1rem; color: var(--muted); margin-left: 4px; }
+.metric-card em { color: var(--accent); font-style: normal; font-weight: 850; }
+.primary-metric { background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 13%, var(--surface)), var(--surface)); }
+
+.results-panel, .export-panel { margin-top: 16px; padding: 26px; border-radius: 22px; border: 1px solid var(--border); background: var(--surface); }
+.panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.panel-heading h2 { margin: 0; }
+.chart-wrap { width: 100%; min-height: 420px; }
+.gap-list { display: grid; gap: 10px; }
+.gap-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start; padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2); }
+.gap-score { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 15px; background: var(--accent-soft); color: var(--accent); font-size: 1.35rem; font-weight: 900; }
+.gap-score small { font-size: 10px; margin-top: -18px; margin-left: 25px; }
+.gap-item > div:nth-child(2) > span { color: var(--muted); font-size: 11px; }
+.gap-item strong { display: block; margin: 5px 0; }
+.gap-item p { margin: 0; font-size: 13px; }
+.export-panel { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.export-panel h2 { margin-bottom: 6px; }
+.export-panel p { margin: 0; max-width: 650px; }
+.export-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.loading-state { min-height: 60vh; display: grid; place-items: center; color: var(--muted); }
