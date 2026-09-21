@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, FileText, Printer, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Download, FileText, History, Printer, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -65,10 +65,19 @@ export function ResultsPage() {
           <ArrowLeft size={17} />
           {t('actions.back')}
         </Link>
-        <Link className="button secondary" to={`/assessment/${assessment.id}`}>
-          <RotateCcw size={17} />
-          {t('actions.restart')}
-        </Link>
+        <div className="toolbar-actions">
+          <Link
+            className="button secondary"
+            to={`/assessment/${assessment.id}/history`}
+          >
+            <History size={17} />
+            {t('actions.history')}
+          </Link>
+          <Link className="button secondary" to={`/assessment/${assessment.id}`}>
+            <RotateCcw size={17} />
+            {t('actions.restart')}
+          </Link>
+        </div>
       </div>
 
       <section className="results-hero">
