@@ -49,6 +49,13 @@ export interface QuestionAnswer {
   notes?: string;
 }
 
+export interface AssessmentRunContext {
+  organization?: string;
+  sessionName?: string;
+  participants?: string;
+  facilitator?: string;
+}
+
 export interface AssessmentRun {
   id: string;
   assessmentId: string;
@@ -58,6 +65,7 @@ export interface AssessmentRun {
   startedAt: string;
   updatedAt: string;
   completedAt?: string;
+  context?: AssessmentRunContext;
   answers: Record<string, QuestionAnswer>;
 }
 
