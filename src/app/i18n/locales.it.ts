@@ -119,6 +119,8 @@ export const it = {
   "builder.editSubtitle": "Aggiorna contenuti, domande ed esempi dell’assessment salvato localmente. Il salvataggio mantiene lo stesso ID e aggiorna il catalogo locale.",
   "builder.editLoaded": "Assessment caricato per la modifica.",
   "builder.editMissing": "L’assessment importato da modificare non è presente su questo dispositivo.",
+  "builder.deleteAssessment": "Elimina assessment",
+  "builder.deleteConfirm": "Eliminare questo assessment importato dal dispositivo? Le compilazioni già salvate resteranno disponibili ma non potranno essere riaperte senza reimportare la definizione.",
   "builder.subtitle": "Definisci contenuti introduttivi, domande, esempi ed evidenze in italiano e inglese. L'assessment viene salvato localmente e può essere scaricato come pacchetto JSON portabile.",
   "builder.metadata": "Metadati",
   "builder.titleIt": "Titolo italiano",
