@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { AssessmentRun, StoredAssessment } from '../src/app/models';
+import type {
+  ActionItem,
+  AssessmentRun,
+  StoredAssessment
+} from '../src/app/models';
 import {
   makeWorkspaceBackup,
   parseWorkspaceBackup
@@ -29,6 +33,16 @@ describe('workspace backup', () => {
   ];
 
   it('creates and parses a portable workspace backup', () => {
+    const action: ActionItem = {
+      id: 'action-1',
+      runId: run.id,
+      questionId: '1',
+      title: 'Review governance',
+      priority: 'high',
+      status: 'open',
+      createdAt: '2026-09-21T10:06:00.000Z',
+      updatedAt: '2026-09-21T10:06:00.000Z'
+    };
     const backup = makeWorkspaceBackup([run], imported, [
       {
         id: 'attachment-1',
@@ -40,14 +54,15 @@ describe('workspace backup', () => {
         createdAt: '2026-09-21T10:05:00.000Z',
         dataUrl: 'data:text/plain;base64,ZXZpZGVuY2U='
       }
-    ]);
+    ], [action]);
     const parsed = parseWorkspaceBackup(backup);
 
     expect(parsed.format).toBe('selfassessment.tech/workspace');
-    expect(parsed.schemaVersion).toBe(2);
+    expect(parsed.schemaVersion).toBe(3);
     expect(parsed.runs).toHaveLength(1);
     expect(parsed.assessments).toHaveLength(1);
     expect(parsed.attachments).toHaveLength(1);
+    expect(parsed.actions).toHaveLength(1);
     expect(parsed.runs[0].answers['1'].value).toBe('yes');
   });
 
@@ -60,8 +75,9 @@ describe('workspace backup', () => {
       assessments: [microsoftSecurityDataGovernance]
     });
 
-    expect(parsed.schemaVersion).toBe(2);
+    expect(parsed.schemaVersion).toBe(3);
     expect(parsed.attachments).toEqual([]);
+    expect(parsed.actions).toEqual([]);
   });
 
   it('rejects malformed workspace backups', () => {
