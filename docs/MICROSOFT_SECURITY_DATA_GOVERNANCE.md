@@ -1,18 +1,46 @@
 # Microsoft Security & Data Governance assessment
 
-The first built-in assessment comes from the Microsoft Security / Data Governance envisioning work.
+The built-in assessment is a **customer-neutral** Microsoft security and data-governance journey.
 
 ## Intent
 
 The assessment is not a product checklist. It is designed to create a shared view of:
 
-- what is actually active;
-- what may be licensed but unused;
-- what is handled by suppliers but poorly understood internally;
-- where data governance and DLP need stronger controls;
-- where a pilot or adoption activity is justified.
+- the Zero Trust architecture and how identity, data, endpoints, applications and security operations connect;
+- what is actually active and covered;
+- what may be licensed but unused or only partially configured;
+- what is externally operated but poorly understood internally;
+- where data governance, protection, DLP, identity and threat protection need stronger controls;
+- where a concrete remediation or adoption activity is justified.
 
-## Areas
+## Envisioning before the questionnaire
+
+Version 1.1 expands the pre-assessment material into a detailed technology walkthrough.
+
+The introduction covers:
+
+1. Zero Trust principles;
+2. Microsoft Entra ID, Conditional Access, Identity Protection, Identity Governance and PIM;
+3. Microsoft Purview Data Map and Unified Catalog;
+4. Information Protection and sensitivity labels;
+5. Data Loss Prevention;
+6. Data Lifecycle Management and Records Management;
+7. Audit and eDiscovery;
+8. Insider Risk Management and Communication Compliance;
+9. Microsoft Defender XDR;
+10. Defender for Endpoint;
+11. Defender for Office 365;
+12. Defender for Identity;
+13. Defender for Cloud Apps;
+14. Microsoft Sentinel;
+15. data security for Microsoft 365 Copilot and generative AI;
+16. Microsoft Security Copilot;
+17. the integrated Microsoft security architecture;
+18. evidence-first assessment methodology.
+
+Each technology section can include direct links to the relevant Microsoft Learn documentation. The maintained reference list is in [MICROSOFT_LEARN_REFERENCE.md](./MICROSOFT_LEARN_REFERENCE.md).
+
+## Assessment areas
 
 1. Governance and strategy
 2. Data inventory and repositories
@@ -26,12 +54,23 @@ The assessment is not a product checklist. It is designed to create a shared vie
 10. Incident response and suppliers
 11. Awareness and continuous improvement
 
-The definition contains 67 questions and mirrors the Essential / Advanced structure of the original spreadsheet.
+The definition contains 67 questions with Essential and Advanced depth.
+
+## Evidence-first approach
+
+The goal is not to record that a product or policy exists. Questions should establish whether a control is:
+
+- **configured** for the intended objective;
+- **covered** across the expected users, devices, data and workloads;
+- **operated** through clear ownership, exception handling and response processes;
+- **measured** through reporting, reviews, tests and trends.
+
+An **Unknown** answer is intentionally useful. It identifies a visibility, ownership or knowledge-transfer gap rather than encouraging an unsupported guess.
 
 ## Suggested usage
 
-Start with the Essential scope during discovery. Use the Full scope when stakeholders are ready to validate configuration, ownership, evidence and operating model in more depth.
+Use the envisioning content to align stakeholders before answering questions. Start with Essential during discovery, then use Full when stakeholders are ready to validate configuration, ownership, evidence and operating model in more depth.
 
-The result should feed a journey such as:
+The product journey is:
 
-**Envision → Assess → Prioritize → Pilot → Adopt → Measure**
+**Envision → Assess → Prioritize → Act → Measure**
