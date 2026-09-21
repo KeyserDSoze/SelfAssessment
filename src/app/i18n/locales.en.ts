@@ -168,5 +168,10 @@ export const en = {
   "builder.errorIntro": "Every intro section needs a title and body in Italian and English.",
   "builder.errorQuestions": "Every question needs an area, text, example and evidence in Italian and English.",
   "builder.errorBuiltInId": "This ID is reserved by an assessment included in the app. Choose a different ID.",
-  "builder.errorInvalidDefinition": "The definition is invalid: check that at least one Essential question exists, IDs are unique and weights are valid."
+  "builder.errorInvalidDefinition": "The definition is invalid: check that at least one Essential question exists, IDs are unique and weights are valid.",
+  "evidence.title": "Evidence attachments",
+  "evidence.hint": "Files are stored locally in IndexedDB only. Maximum 5 files per question, 5 MB each.",
+  "evidence.add": "Add files",
+  "evidence.maxFiles": "You reached the limit of 5 attachments for this question.",
+  "evidence.tooLarge": "{{name}} exceeds the {{size}} limit."
 } as const;
