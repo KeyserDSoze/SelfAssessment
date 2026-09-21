@@ -4,6 +4,7 @@ import {
   DatabaseBackup,
   FileUp,
   HardDriveDownload,
+  PencilRuler,
   ShieldCheck,
   Trash2
 } from 'lucide-react';
@@ -110,6 +111,11 @@ export function HomePage() {
           <h1>{t('home.title')}</h1>
           <p>{t('home.subtitle')}</p>
           <div className="hero-actions">
+            <Link className="button primary" to="/builder">
+              <PencilRuler size={18} />
+              {t('actions.createAssessment')}
+            </Link>
+
             <button
               className="button secondary"
               onClick={() => importRef.current?.click()}
