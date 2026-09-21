@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, FileText, History, Printer, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CircleHelp, Download, FileText, History, ListChecks, Printer, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -55,6 +55,13 @@ export function ResultsPage() {
     score: item.score === null ? 0 : Number(item.score.toFixed(2))
   }));
 
+  const unknownQuestions = result.scoredQuestions.filter(
+    (item) => item.answer.value === 'unknown'
+  );
+  const unansweredQuestions = result.scoredQuestions.filter(
+    (item) => item.answer.value === undefined
+  );
+
   return (
     <div className="page results-page">
       <div className="page-toolbar">
@@ -108,6 +115,71 @@ export function ResultsPage() {
           <em>knowledge / governance signal</em>
         </article>
       </div>
+
+      {(unknownQuestions.length > 0 || unansweredQuestions.length > 0) && (
+        <section className="results-panel">
+          <div className="panel-heading">
+            <div>
+              <h2>{t('results.visibility')}</h2>
+              <p>{t('results.visibilityHint')}</p>
+            </div>
+          </div>
+
+          <div className="visibility-grid">
+            <article className="visibility-card">
+              <div className="visibility-card-heading">
+                <CircleHelp size={20} />
+                <div>
+                  <strong>{t('results.unknownItems')}</strong>
+                  <span>{unknownQuestions.length}</span>
+                </div>
+              </div>
+              <p>{t('results.unknownItemsHint')}</p>
+              {unknownQuestions.length > 0 ? (
+                <div className="visibility-list">
+                  {unknownQuestions.slice(0, 10).map((item) => (
+                    <Link
+                      key={item.question.id}
+                      to={`/assessment/${assessment.id}/run/${run.id}?question=${encodeURIComponent(item.question.id)}`}
+                    >
+                      <span>{localized(item.question.area, locale)}</span>
+                      <strong>{localized(item.question.question, locale)}</strong>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="visibility-empty">{t('results.none')}</div>
+              )}
+            </article>
+
+            <article className="visibility-card">
+              <div className="visibility-card-heading">
+                <ListChecks size={20} />
+                <div>
+                  <strong>{t('results.unansweredItems')}</strong>
+                  <span>{unansweredQuestions.length}</span>
+                </div>
+              </div>
+              <p>{t('results.unansweredItemsHint')}</p>
+              {unansweredQuestions.length > 0 ? (
+                <div className="visibility-list">
+                  {unansweredQuestions.slice(0, 10).map((item) => (
+                    <Link
+                      key={item.question.id}
+                      to={`/assessment/${assessment.id}/run/${run.id}?question=${encodeURIComponent(item.question.id)}`}
+                    >
+                      <span>{localized(item.question.area, locale)}</span>
+                      <strong>{localized(item.question.question, locale)}</strong>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="visibility-empty">{t('results.none')}</div>
+              )}
+            </article>
+          </div>
+        </section>
+      )}
 
       <section className="results-panel">
         <div className="panel-heading">
@@ -166,21 +238,21 @@ export function ResultsPage() {
         <div className="export-actions">
           <button
             className="button secondary"
-            onClick={() => downloadResultJson(assessment, run, locale)}
+            onClick={() => void downloadResultJson(assessment, run, locale)}
           >
             <Download size={17} />
             {t('actions.exportJson')}
           </button>
           <button
             className="button secondary"
-            onClick={() => downloadResultCsv(assessment, run, locale)}
+            onClick={() => void downloadResultCsv(assessment, run, locale)}
           >
             <FileText size={17} />
             {t('actions.exportCsv')}
           </button>
           <button
             className="button secondary"
-            onClick={() => downloadResultHtml(assessment, run, locale)}
+            onClick={() => void downloadResultHtml(assessment, run, locale)}
           >
             <FileText size={17} />
             {t('actions.exportHtml')}
