@@ -6,15 +6,15 @@ import {
   Sparkles,
   Trash2
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import type {
   AssessmentDefinition,
   AssessmentQuestion,
   IntroSection
 } from '../models';
-import { putImportedAssessment } from '../lib/db';
+import { getImportedAssessment, putImportedAssessment } from '../lib/db';
 import { downloadAssessment } from '../lib/export';
 
 const emptyIntro = (): IntroSection => ({
@@ -50,6 +50,7 @@ function slugify(value: string): string {
 }
 
 export function AssessmentBuilderPage() {
+  const { id: editId } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [titleIt, setTitleIt] = useState('');
@@ -68,6 +69,32 @@ export function AssessmentBuilderPage() {
   ]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!editId) return;
+
+    void getImportedAssessment(editId).then((stored) => {
+      if (!stored) {
+        setError(t('builder.editMissing'));
+        return;
+      }
+
+      const current = stored.definition;
+      setTitleIt(current.title.it);
+      setTitleEn(current.title.en);
+      setId(current.id);
+      setVersion(current.version);
+      setShortIt(current.shortDescription.it);
+      setShortEn(current.shortDescription.en);
+      setLongIt(current.longDescription.it);
+      setLongEn(current.longDescription.en);
+      setEstimatedMinutes(current.estimatedMinutes);
+      setTags(current.tags.join(', '));
+      setIntro(current.intro);
+      setQuestions(current.questions);
+      setMessage(t('builder.editLoaded'));
+    });
+  }, [editId, t]);
 
   const resolvedId = useMemo(
     () => slugify(id || titleEn || titleIt),
@@ -204,8 +231,8 @@ export function AssessmentBuilderPage() {
 
       <section className="builder-hero">
         <span className="hero-kicker">{t('builder.kicker')}</span>
-        <h1>{t('builder.title')}</h1>
-        <p>{t('builder.subtitle')}</p>
+        <h1>{editId ? t('builder.editTitle') : t('builder.title')}</h1>
+        <p>{editId ? t('builder.editSubtitle') : t('builder.subtitle')}</p>
       </section>
 
       <section className="builder-panel">
