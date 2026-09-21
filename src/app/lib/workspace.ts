@@ -194,7 +194,7 @@ function dataUrlToBlob(dataUrl: string): Blob {
   });
 }
 
-async function serializeEvidenceAttachment(
+export async function serializeEvidenceAttachment(
   attachment: EvidenceAttachment
 ): Promise<SerializedEvidenceAttachment> {
   return {
