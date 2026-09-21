@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, History, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, Download, ExternalLink, History, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -110,6 +110,40 @@ export function AssessmentIntroPage() {
                     <li key={bullet.it}>{localized(bullet, locale)}</li>
                   ))}
                 </ul>
+              )}
+
+              {section.details && section.details.length > 0 && (
+                <div className="intro-detail-grid">
+                  {section.details.map((detail) => (
+                    <article className="intro-detail-card" key={detail.title.it}>
+                      <strong>{localized(detail.title, locale)}</strong>
+                      <p>{localized(detail.body, locale)}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
+
+              {section.references && section.references.length > 0 && (
+                <div className="intro-references">
+                  <span className="intro-references-label">
+                    <BookOpen size={15} />
+                    Microsoft Learn
+                  </span>
+                  <div>
+                    {section.references.map((reference) => (
+                      <a
+                        key={reference.url}
+                        className="intro-reference-link"
+                        href={reference.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {localized(reference.label, locale)}
+                        <ExternalLink size={13} />
+                      </a>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </article>

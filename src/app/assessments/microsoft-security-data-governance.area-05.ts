@@ -13,8 +13,8 @@ export const area5Questions: AssessmentQuestion[] = [
       "en": "Are retention and deletion rules defined for key document categories?"
     },
     "example": {
-      "it": "Contratti, documenti del personale, pratiche disciplinari e documenti operativi hanno tempi distinti.",
-      "en": "Contracts, HR documents, disciplinary cases and operational records have different retention periods."
+      "it": "Contratti, documenti del personale, documentazione fiscale e documenti operativi hanno tempi di conservazione distinti.",
+      "en": "Contracts, HR documents, tax documentation and operational records have different retention periods."
     },
     "evidence": {
       "it": "Retention schedule, policy, approvazione Legal/DPO.",

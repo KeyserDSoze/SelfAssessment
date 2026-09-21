@@ -37,8 +37,8 @@ export const area11Questions: AssessmentQuestion[] = [
       "en": "Is training differentiated for higher-risk roles?"
     },
     "example": {
-      "it": "Dirigenti, amministratori, HR, Legal, chi gestisce minori o dati sanitari ricevono scenari mirati.",
-      "en": "Executives, administrators, HR, Legal and staff handling minors or health data receive targeted scenarios."
+      "it": "Dirigenti, amministratori, HR, Legal, Finance e chi gestisce dati personali o sanitari ricevono scenari mirati.",
+      "en": "Executives, administrators, HR, Legal, Finance and staff handling personal or health data receive targeted scenarios."
     },
     "evidence": {
       "it": "Role-based training, attendance, assessment.",

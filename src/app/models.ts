@@ -10,12 +10,24 @@ export type RunScope = 'essential' | 'all';
 export type ResponseType = 'scale' | 'binary';
 export type AnswerValue = number | 'yes' | 'no' | 'unknown' | 'na';
 
+export interface IntroDetail {
+  title: LocalizedText;
+  body: LocalizedText;
+}
+
+export interface IntroReference {
+  label: LocalizedText;
+  url: string;
+}
+
 export interface IntroSection {
   id: string;
   eyebrow?: LocalizedText;
   title: LocalizedText;
   body: LocalizedText;
   bullets?: LocalizedText[];
+  details?: IntroDetail[];
+  references?: IntroReference[];
 }
 
 export interface AssessmentQuestion {
@@ -108,4 +120,22 @@ export interface EvidenceAttachment {
   size: number;
   createdAt: string;
   blob: Blob;
+}
+
+export type ActionPriority = 'high' | 'medium' | 'low';
+export type ActionStatus = 'open' | 'in_progress' | 'done';
+
+export interface ActionItem {
+  id: string;
+  runId: string;
+  questionId?: string;
+  title: string;
+  description?: string;
+  owner?: string;
+  priority: ActionPriority;
+  status: ActionStatus;
+  targetDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 }

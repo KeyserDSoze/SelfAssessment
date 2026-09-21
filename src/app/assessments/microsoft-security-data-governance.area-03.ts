@@ -85,8 +85,8 @@ export const area3Questions: AssessmentQuestion[] = [
       "en": "Are sensitive information types relevant to the organization defined?"
     },
     "example": {
-      "it": "Codice fiscale, dati sanitari, minori, coordinate bancarie, credenziali, numeri documento, dati disciplinari.",
-      "en": "Tax identifiers, health data, minors' data, bank details, credentials, identity document numbers and disciplinary data."
+      "it": "Identificativi personali, dati sanitari, coordinate bancarie, credenziali, numeri di documento, dati fiscali e proprietà intellettuale.",
+      "en": "Personal identifiers, health data, bank details, credentials, identity document numbers, tax data and intellectual property."
     },
     "evidence": {
       "it": "Sensitive Information Types standard/custom, test match.",

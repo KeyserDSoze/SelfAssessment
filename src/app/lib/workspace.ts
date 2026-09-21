@@ -1,4 +1,5 @@
 import type {
+  ActionItem,
   AssessmentDefinition,
   AssessmentRun,
   EvidenceAttachment,
@@ -6,9 +7,11 @@ import type {
 } from '../models';
 import { assertValidAssessmentDefinition } from './assessment-validation';
 import {
+  listActionItems,
   listEvidenceAttachments,
   listImportedAssessments,
   listRuns,
+  putActionItem,
   putEvidenceAttachment,
   putImportedAssessment,
   putRun
@@ -27,11 +30,12 @@ export interface SerializedEvidenceAttachment {
 
 export interface WorkspaceBackup {
   format: 'selfassessment.tech/workspace';
-  schemaVersion: 2;
+  schemaVersion: 3;
   exportedAt: string;
   runs: AssessmentRun[];
   assessments: AssessmentDefinition[];
   attachments: SerializedEvidenceAttachment[];
+  actions: ActionItem[];
 }
 
 interface LegacyWorkspaceBackupV1 {
@@ -45,15 +49,17 @@ interface LegacyWorkspaceBackupV1 {
 export function makeWorkspaceBackup(
   runs: AssessmentRun[],
   importedAssessments: StoredAssessment[],
-  attachments: SerializedEvidenceAttachment[] = []
+  attachments: SerializedEvidenceAttachment[] = [],
+  actions: ActionItem[] = []
 ): WorkspaceBackup {
   return {
     format: 'selfassessment.tech/workspace',
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: new Date().toISOString(),
     runs,
     assessments: importedAssessments.map((item) => item.definition),
-    attachments
+    attachments,
+    actions
   };
 }
 
@@ -109,6 +115,7 @@ export function parseWorkspaceBackup(value: unknown): WorkspaceBackup {
     runs?: AssessmentRun[];
     assessments?: AssessmentDefinition[];
     attachments?: SerializedEvidenceAttachment[];
+    actions?: ActionItem[];
   };
 
   if (
@@ -128,17 +135,35 @@ export function parseWorkspaceBackup(value: unknown): WorkspaceBackup {
   if (candidate.schemaVersion === 1) {
     return {
       format: 'selfassessment.tech/workspace',
-      schemaVersion: 2,
+      schemaVersion: 3,
       exportedAt: candidate.exportedAt ?? new Date().toISOString(),
       runs: candidate.runs,
       assessments: candidate.assessments,
-      attachments: []
+      attachments: [],
+      actions: []
+    };
+  }
+
+  if (candidate.schemaVersion === 2) {
+    if (!Array.isArray(candidate.attachments)) {
+      throw new Error('Invalid workspace backup');
+    }
+    validateAttachments(candidate.attachments);
+    return {
+      format: 'selfassessment.tech/workspace',
+      schemaVersion: 3,
+      exportedAt: candidate.exportedAt ?? new Date().toISOString(),
+      runs: candidate.runs,
+      assessments: candidate.assessments,
+      attachments: candidate.attachments,
+      actions: []
     };
   }
 
   if (
-    candidate.schemaVersion !== 2 ||
-    !Array.isArray(candidate.attachments)
+    candidate.schemaVersion !== 3 ||
+    !Array.isArray(candidate.attachments) ||
+    !Array.isArray(candidate.actions)
   ) {
     throw new Error('Unsupported workspace backup version');
   }
@@ -147,11 +172,12 @@ export function parseWorkspaceBackup(value: unknown): WorkspaceBackup {
 
   return {
     format: 'selfassessment.tech/workspace',
-    schemaVersion: 2,
+    schemaVersion: 3,
     exportedAt: candidate.exportedAt ?? new Date().toISOString(),
     runs: candidate.runs,
     assessments: candidate.assessments,
-    attachments: candidate.attachments
+    attachments: candidate.attachments,
+    actions: candidate.actions
   };
 }
 
@@ -210,10 +236,11 @@ export async function serializeEvidenceAttachment(
 }
 
 export async function downloadWorkspaceBackup(): Promise<void> {
-  const [runs, imported, evidenceAttachments] = await Promise.all([
+  const [runs, imported, evidenceAttachments, actions] = await Promise.all([
     listRuns(),
     listImportedAssessments(),
-    listEvidenceAttachments()
+    listEvidenceAttachments(),
+    listActionItems()
   ]);
 
   const serializedAttachments = await Promise.all(
@@ -223,7 +250,8 @@ export async function downloadWorkspaceBackup(): Promise<void> {
   const backup = makeWorkspaceBackup(
     runs,
     imported,
-    serializedAttachments
+    serializedAttachments,
+    actions
   );
   const date = new Date().toISOString().slice(0, 10);
   downloadJson(`selfassessment-workspace-${date}.json`, backup);
@@ -240,6 +268,10 @@ export async function restoreWorkspaceBackup(
 
   for (const run of backup.runs) {
     await putRun(run);
+  }
+
+  for (const action of backup.actions) {
+    await putActionItem(action);
   }
 
   for (const attachment of backup.attachments) {
