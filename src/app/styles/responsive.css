@@ -1,0 +1,36 @@
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { min-height: 260px; }
+  .section-heading { display: block; }
+  .section-heading p { margin-top: 12px; }
+  .scope-grid, .context-grid, .metric-grid { grid-template-columns: 1fr; }
+  .export-panel { display: block; }
+  .export-actions { justify-content: flex-start; margin-top: 20px; }
+}
+@media (max-width: 640px) {
+  .topbar { align-items: flex-start; }
+  .brand small, .nav-home span { display: none; }
+  .select-control { padding: 0 8px; }
+  .select-control svg { display: none; }
+  .page { width: min(100% - 24px, 1280px); padding-top: 28px; }
+  .hero { min-height: 0; padding: 28px; border-radius: 24px; }
+  .hero-visual { display: none; }
+  .assessment-grid { grid-template-columns: 1fr; }
+  .recent-run { align-items: flex-start; }
+  .recent-actions { flex-direction: column; }
+  .intro-section { grid-template-columns: 1fr; }
+  .intro-index { font-size: 1rem; }
+  .scale-grid { grid-template-columns: repeat(4, 1fr); }
+  .binary-grid { grid-template-columns: repeat(2, 1fr); }
+  .question-heading { display: block; }
+  .question-weight { margin-bottom: 12px; }
+  .runner-top { align-items: flex-start; }
+  .runner-status { flex-direction: column; align-items: flex-end; gap: 4px; }
+  .gap-item { grid-template-columns: 56px 1fr; }
+  .gap-item > .pill { grid-column: 2; justify-self: start; }
+}
+@media print {
+  .topbar, .page-toolbar, .export-panel, .runner-nav { display: none !important; }
+  body, html { background: white !important; color: black !important; }
+  .results-panel, .metric-card { box-shadow: none; break-inside: avoid; }
+}
