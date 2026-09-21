@@ -124,3 +124,39 @@
     grid-template-columns: 1fr;
   }
 }
+
+.result-context {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.result-context > span {
+  min-width: 150px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.result-context small,
+.result-context strong {
+  display: block;
+}
+
+.result-context small {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.result-context strong {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
