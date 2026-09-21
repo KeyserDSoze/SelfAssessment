@@ -21,6 +21,7 @@ import {
 } from '../lib/export';
 import { localized } from '../lib/localize';
 import { calculateResults, maturityKey } from '../lib/scoring';
+import { ActionPlanPanel } from '../components/ActionPlanPanel';
 
 export function ResultsPage() {
   const { runId = '' } = useParams();
@@ -257,6 +258,13 @@ export function ResultsPage() {
           </div>
         )}
       </section>
+
+      <ActionPlanPanel
+        assessment={assessment}
+        run={run}
+        result={result}
+        locale={locale}
+      />
 
       <section className="export-panel">
         <div>
