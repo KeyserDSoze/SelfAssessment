@@ -1,0 +1,162 @@
+.metric-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.metric-card { min-height: 178px; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); }
+.metric-card span { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.metric-card strong { font-size: clamp(2.6rem, 5vw, 4.1rem); letter-spacing: -.06em; }
+.metric-card strong small { font-size: 1rem; color: var(--muted); margin-left: 4px; }
+.metric-card em { color: var(--accent); font-style: normal; font-weight: 850; }
+.primary-metric { background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 13%, var(--surface)), var(--surface)); }
+
+.results-panel, .export-panel { margin-top: 16px; padding: 26px; border-radius: 22px; border: 1px solid var(--border); background: var(--surface); }
+.panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.panel-heading h2 { margin: 0; }
+.chart-wrap { width: 100%; min-height: 420px; }
+.gap-list { display: grid; gap: 10px; }
+.gap-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start; padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-2); }
+.gap-score { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 15px; background: var(--accent-soft); color: var(--accent); font-size: 1.35rem; font-weight: 900; }
+.gap-score small { font-size: 10px; margin-top: -18px; margin-left: 25px; }
+.gap-item > div:nth-child(2) > span { color: var(--muted); font-size: 11px; }
+.gap-item strong { display: block; margin: 5px 0; }
+.gap-item p { margin: 0; font-size: 13px; }
+.export-panel { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.export-panel h2 { margin-bottom: 6px; }
+.export-panel p { margin: 0; max-width: 650px; }
+.export-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+.loading-state { min-height: 60vh; display: grid; place-items: center; color: var(--muted); }
+
+.visibility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.visibility-card {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+
+.visibility-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.visibility-card-heading svg {
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.visibility-card-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.visibility-card-heading strong {
+  font-size: 1rem;
+}
+
+.visibility-card-heading span {
+  min-width: 27px;
+  height: 27px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.visibility-card > p {
+  margin: 10px 0 14px;
+  font-size: 13px;
+}
+
+.visibility-list {
+  display: grid;
+  gap: 8px;
+}
+
+.visibility-list a {
+  display: block;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+  transition: .18s ease;
+}
+
+.visibility-list a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.visibility-list span,
+.visibility-list strong {
+  display: block;
+}
+
+.visibility-list span {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.visibility-list strong {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.visibility-empty {
+  padding: 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 13px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .visibility-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-context {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.result-context > span {
+  min-width: 150px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+
+.result-context small,
+.result-context strong {
+  display: block;
+}
+
+.result-context small {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.result-context strong {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
