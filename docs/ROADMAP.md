@@ -15,6 +15,7 @@
 - JSON / CSV / HTML result export
 - browser print / save-to-PDF
 - assessment package import/export
+- complete local workspace backup / restore
 - GitHub Pages deployment workflow
 - CI workflow
 
