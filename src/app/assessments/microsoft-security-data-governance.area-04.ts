@@ -37,8 +37,8 @@ export const area4Questions: AssessmentQuestion[] = [
       "en": "Are DLP policies built around real risk scenarios rather than only generic templates?"
     },
     "example": {
-      "it": "Condivisione di dati di minori, documenti disciplinari o contratti riservati verso domini esterni.",
-      "en": "Sharing minors' data, disciplinary documents or confidential contracts with external domains."
+      "it": "Condivisione di dati personali, documenti HR, informazioni finanziarie o contratti riservati verso domini esterni.",
+      "en": "Sharing personal data, HR documents, financial information or confidential contracts with external domains."
     },
     "evidence": {
       "it": "Use case, criteri policy, stakeholder approval.",
