@@ -90,3 +90,14 @@ export interface StoredAssessment {
   definition: AssessmentDefinition;
   importedAt: string;
 }
+
+export interface EvidenceAttachment {
+  id: string;
+  runId: string;
+  questionId: string;
+  name: string;
+  type: string;
+  size: number;
+  createdAt: string;
+  blob: Blob;
+}
