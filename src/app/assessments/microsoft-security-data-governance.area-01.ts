@@ -61,8 +61,8 @@ export const area1Questions: AssessmentQuestion[] = [
       "en": "Has the scope of critical information been agreed with business functions?"
     },
     "example": {
-      "it": "Dati di tesserati, minori, sanitari, disciplinari, contratti, arbitrali, personale e fornitori.",
-      "en": "Data about registered members, minors, health, disciplinary cases, contracts, refereeing, staff and suppliers."
+      "it": "Dati clienti, personale, informazioni finanziarie, contratti, proprietà intellettuale, credenziali e dati di fornitori.",
+      "en": "Customer data, workforce data, financial information, contracts, intellectual property, credentials and supplier data."
     },
     "evidence": {
       "it": "Elenco dati critici, workshop con Legal/Privacy/HR/Business.",
