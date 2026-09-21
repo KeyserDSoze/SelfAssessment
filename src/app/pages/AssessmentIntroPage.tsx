@@ -1,4 +1,4 @@
-import { ArrowLeft, Download, Sparkles } from 'lucide-react';
+import { ArrowLeft, Download, History, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -52,13 +52,22 @@ export function AssessmentIntroPage() {
           <ArrowLeft size={17} />
           {t('actions.back')}
         </Link>
-        <button
-          className="button secondary"
-          onClick={() => downloadAssessment(assessment)}
-        >
-          <Download size={17} />
-          {t('actions.downloadAssessment')}
-        </button>
+        <div className="toolbar-actions">
+          <Link
+            className="button secondary"
+            to={`/assessment/${assessment.id}/history`}
+          >
+            <History size={17} />
+            {t('actions.history')}
+          </Link>
+          <button
+            className="button secondary"
+            onClick={() => downloadAssessment(assessment)}
+          >
+            <Download size={17} />
+            {t('actions.downloadAssessment')}
+          </button>
+        </div>
       </div>
 
       <section className="intro-hero">
