@@ -119,6 +119,8 @@ export const en = {
   "builder.editSubtitle": "Update the content, questions and examples of the locally stored assessment. Saving keeps the same ID and updates the local catalog.",
   "builder.editLoaded": "Assessment loaded for editing.",
   "builder.editMissing": "The imported assessment to edit is not available on this device.",
+  "builder.deleteAssessment": "Delete assessment",
+  "builder.deleteConfirm": "Delete this imported assessment from the device? Existing saved runs will remain, but they cannot be reopened unless the definition is imported again.",
   "builder.subtitle": "Define introductory content, questions, examples and evidence in Italian and English. The assessment is stored locally and can be downloaded as a portable JSON package.",
   "builder.metadata": "Metadata",
   "builder.titleIt": "Italian title",
