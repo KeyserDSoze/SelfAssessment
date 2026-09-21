@@ -1,13 +1,29 @@
-import { Database, FileUp, HardDriveDownload, ShieldCheck } from 'lucide-react';
+import {
+  ArchiveRestore,
+  Database,
+  DatabaseBackup,
+  FileUp,
+  HardDriveDownload,
+  ShieldCheck,
+  Trash2
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { AssessmentCard } from '../components/AssessmentCard';
 import type { AssessmentDefinition, AssessmentRun, Locale } from '../models';
 import { listAllAssessments } from '../lib/assessment-resolver';
-import { listRuns, putImportedAssessment } from '../lib/db';
+import {
+  deleteRun,
+  listRuns,
+  putImportedAssessment
+} from '../lib/db';
 import { parseAssessmentPackage } from '../lib/assessment-package';
 import { localized } from '../lib/localize';
+import {
+  downloadWorkspaceBackup,
+  restoreWorkspaceBackup
+} from '../lib/workspace';
 
 interface CatalogItem {
   assessment: AssessmentDefinition;
@@ -21,6 +37,7 @@ export function HomePage() {
   const [runs, setRuns] = useState<AssessmentRun[]>([]);
   const [message, setMessage] = useState('');
   const importRef = useRef<HTMLInputElement>(null);
+  const restoreRef = useRef<HTMLInputElement>(null);
 
   const refresh = async () => {
     const [items, recentRuns] = await Promise.all([
@@ -50,6 +67,36 @@ export function HomePage() {
     }
   };
 
+  const onRestore = async (file?: File) => {
+    if (!file) return;
+    try {
+      const content = JSON.parse(await file.text()) as unknown;
+      const backup = await restoreWorkspaceBackup(content);
+      setMessage(
+        t('backup.restored', {
+          runs: backup.runs.length,
+          assessments: backup.assessments.length
+        })
+      );
+      await refresh();
+    } catch {
+      setMessage(t('backup.invalid'));
+    } finally {
+      if (restoreRef.current) restoreRef.current.value = '';
+    }
+  };
+
+  const onBackup = async () => {
+    await downloadWorkspaceBackup();
+    setMessage(t('backup.exported'));
+  };
+
+  const onDeleteRun = async (runId: string) => {
+    if (!window.confirm(t('home.deleteRunConfirm'))) return;
+    await deleteRun(runId);
+    await refresh();
+  };
+
   const assessmentName = (id: string) => {
     const found = catalog.find((item) => item.assessment.id === id);
     return found ? localized(found.assessment.title, locale) : id;
@@ -77,6 +124,27 @@ export function HomePage() {
               accept=".json,.assessment.json,application/json"
               onChange={(event) => void onImport(event.target.files?.[0])}
             />
+
+            <button className="button secondary" onClick={() => void onBackup()}>
+              <DatabaseBackup size={18} />
+              {t('actions.backupWorkspace')}
+            </button>
+
+            <button
+              className="button secondary"
+              onClick={() => restoreRef.current?.click()}
+            >
+              <ArchiveRestore size={18} />
+              {t('actions.restoreWorkspace')}
+            </button>
+            <input
+              ref={restoreRef}
+              hidden
+              type="file"
+              accept=".json,application/json"
+              onChange={(event) => void onRestore(event.target.files?.[0])}
+            />
+
             {message && <span className="inline-message">{message}</span>}
           </div>
         </div>
@@ -153,6 +221,14 @@ export function HomePage() {
                   <Link className="button secondary" to={`/results/${run.id}`}>
                     {t('actions.results')}
                   </Link>
+                  <button
+                    className="button ghost danger-button"
+                    onClick={() => void onDeleteRun(run.id)}
+                    title={t('actions.delete')}
+                    aria-label={t('actions.delete')}
+                  >
+                    <Trash2 size={17} />
+                  </button>
                 </div>
               </article>
             ))}
