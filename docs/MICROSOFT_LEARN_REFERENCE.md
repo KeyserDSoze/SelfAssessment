@@ -15,6 +15,8 @@ This is a curated baseline for the technologies covered by the assessment. Micro
 | Microsoft Entra Conditional Access | https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview |
 | Microsoft Entra ID Governance | https://learn.microsoft.com/en-us/entra/id-governance/identity-governance-overview |
 | Microsoft Entra Privileged Identity Management | https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/ |
+| Microsoft Entra Workload ID | https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-overview |
+| Conditional Access for workload identities | https://learn.microsoft.com/en-us/entra/identity/conditional-access/workload-identity |
 
 ## Microsoft Purview: governance, protection and compliance
 
@@ -31,13 +33,18 @@ This is a curated baseline for the technologies covered by the assessment. Micro
 | eDiscovery | https://learn.microsoft.com/en-us/purview/edisc-features-components |
 | Insider Risk Management | https://learn.microsoft.com/en-us/purview/insider-risk-management |
 | Communication Compliance | https://learn.microsoft.com/en-us/purview/communication-compliance |
+| Adaptive Protection in DLP | https://learn.microsoft.com/en-us/purview/dlp-adaptive-protection-learn |
 
 ## Microsoft Defender and unified security operations
 
 | Topic | Microsoft Learn |
 | --- | --- |
 | Microsoft Defender XDR | https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender |
+| Microsoft Security Exposure Management | https://learn.microsoft.com/en-us/security-exposure-management/ |
+| Exposure Management attack paths | https://learn.microsoft.com/en-us/security-exposure-management/review-attack-paths |
 | Microsoft Defender for Endpoint | https://learn.microsoft.com/en-us/defender-endpoint/ |
+| Endpoint security in Microsoft Intune | https://learn.microsoft.com/en-us/intune/intune-service/protect/endpoint-security |
+| Defender for Endpoint integration with Intune | https://learn.microsoft.com/en-us/intune/intune-service/protect/advanced-threat-protection-configure |
 | Microsoft Defender for Office 365 | https://learn.microsoft.com/en-us/defender-office-365/ |
 | Microsoft Defender for Identity | https://learn.microsoft.com/en-us/defender-for-identity/what-is |
 | Microsoft Defender for Cloud Apps | https://learn.microsoft.com/en-us/defender-cloud-apps/ |
