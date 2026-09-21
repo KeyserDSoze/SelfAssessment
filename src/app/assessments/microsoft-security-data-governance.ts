@@ -137,6 +137,13 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
             it: 'PIM consente accessi privilegiati just-in-time e time-bound, con possibilità di approvazione, MFA, giustificazione, notifiche e revisioni. Riduce il rischio dei ruoli amministrativi permanentemente attivi.',
             en: 'PIM enables just-in-time and time-bound privileged access, with approval, MFA, justification, notifications and reviews. It reduces the risk of permanently active administrative roles.'
           }
+        },
+        {
+          title: { it: 'Workload ID e identità non umane', en: 'Workload ID and non-human identities' },
+          body: {
+            it: 'Applicazioni, service principal e managed identity sono identità a tutti gli effetti e possono avere accessi molto privilegiati. Non possono usare MFA come una persona e spesso dipendono da secret o certificati: vanno quindi inventariate, associate a un owner, protette con credenziali moderne o federazione dove possibile, sottoposte a review e monitorate per rischio. Conditional Access può essere applicato a scenari supportati di workload identity.',
+            en: 'Applications, service principals and managed identities are identities in their own right and can hold highly privileged access. They cannot use MFA like a person and often depend on secrets or certificates, so they should be inventoried, assigned an owner, protected with modern credentials or federation where possible, reviewed and monitored for risk. Conditional Access can be applied to supported workload-identity scenarios.'
+          }
         }
       ],
       references: [
@@ -151,6 +158,14 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
         {
           label: { it: 'Privileged Identity Management', en: 'Privileged Identity Management' },
           url: 'https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/'
+        },
+        {
+          label: { it: 'Microsoft Entra Workload ID', en: 'Microsoft Entra Workload ID' },
+          url: 'https://learn.microsoft.com/en-us/entra/workload-id/workload-identities-overview'
+        },
+        {
+          label: { it: 'Conditional Access per workload identity', en: 'Conditional Access for workload identities' },
+          url: 'https://learn.microsoft.com/en-us/entra/identity/conditional-access/workload-identity'
         }
       ]
     },
@@ -272,6 +287,13 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
             it: 'Serve un ciclo continuo: test, analisi dei match, tuning delle eccezioni, gestione degli incidenti, reporting e revisione delle policy quando cambiano dati e processi.',
             en: 'A continuous cycle is needed: testing, match analysis, exception tuning, incident handling, reporting and policy review as data and processes change.'
           }
+        },
+        {
+          title: { it: 'Adaptive Protection', en: 'Adaptive Protection' },
+          body: {
+            it: 'Adaptive Protection collega Insider Risk Management e DLP: il livello di rischio interno associato a un utente può diventare una condizione dinamica che rende le protezioni DLP più o meno restrittive. È un passaggio da policy uguali per tutti a controlli adattivi, ma richiede una governance attenta per evitare disruption eccessiva e per mantenere separazione dei ruoli e privacy.',
+            en: 'Adaptive Protection connects Insider Risk Management and DLP: the insider-risk level associated with a user can become a dynamic condition that makes DLP protections more or less restrictive. This moves from one-size-fits-all policies to adaptive controls, but requires careful governance to avoid excessive disruption and preserve role separation and privacy.'
+          }
         }
       ],
       references: [
@@ -282,6 +304,10 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
         {
           label: { it: 'Purview data security', en: 'Purview data security' },
           url: 'https://learn.microsoft.com/en-us/purview/purview-security'
+        },
+        {
+          label: { it: 'Adaptive Protection in DLP', en: 'Adaptive Protection in DLP' },
+          url: 'https://learn.microsoft.com/en-us/purview/dlp-adaptive-protection-learn'
         }
       ]
     },
@@ -452,12 +478,27 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
             it: 'Le capacità di risposta possono intervenire su entità e artefatti, mentre l’automazione riduce il lavoro manuale. L’assessment verifica però anche governance, ownership, SLA e procedure del SOC.',
             en: 'Response capabilities can act on entities and artifacts, while automation reduces manual work. The assessment also checks SOC governance, ownership, SLAs and procedures.'
           }
+        },
+        {
+          title: { it: 'Security Exposure Management', en: 'Security Exposure Management' },
+          body: {
+            it: 'Exposure Management sposta la prioritizzazione dalla singola vulnerabilità alla relazione tra asset, identità, configurazioni e percorsi di attacco. L’Enterprise Exposure Graph e gli attack path aiutano a vedere come un punto di ingresso possa portare verso asset critici e a concentrare remediation e investimenti dove riducono davvero il rischio. La qualità del risultato dipende dalla copertura delle sorgenti e dalla corretta identificazione degli asset critici.',
+            en: 'Exposure Management shifts prioritization from individual vulnerabilities to relationships among assets, identities, configurations and attack paths. The Enterprise Exposure Graph and attack paths help show how an entry point can lead to critical assets and focus remediation and investment where they actually reduce risk. Result quality depends on source coverage and correctly identifying critical assets.'
+          }
         }
       ],
       references: [
         {
           label: { it: 'Defender XDR overview', en: 'Defender XDR overview' },
           url: 'https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-defender'
+        },
+        {
+          label: { it: 'Security Exposure Management', en: 'Security Exposure Management' },
+          url: 'https://learn.microsoft.com/en-us/security-exposure-management/'
+        },
+        {
+          label: { it: 'Attack path', en: 'Attack paths' },
+          url: 'https://learn.microsoft.com/en-us/security-exposure-management/review-attack-paths'
         }
       ]
     },
@@ -493,12 +534,27 @@ export const microsoftSecurityDataGovernance: AssessmentDefinition = {
             it: 'Automated Investigation and Response può analizzare evidenze e applicare remediation in base al livello di automazione. Va verificato se l’automazione è effettivamente abilitata e governata.',
             en: 'Automated Investigation and Response can analyze evidence and apply remediation depending on automation level. Verify whether automation is actually enabled and governed.'
           }
+        },
+        {
+          title: { it: 'Intune e device compliance', en: 'Intune and device compliance' },
+          body: {
+            it: 'Intune è il piano di gestione che distribuisce policy di endpoint security, baseline, configurazioni EDR, antivirus, firewall, cifratura e ASR sui dispositivi gestiti. Integrato con Defender for Endpoint, può ricevere il device risk e usarlo nella compliance; Entra Conditional Access può poi negare o rafforzare l’accesso alle risorse quando il dispositivo non soddisfa i requisiti. È importante evitare policy sovrapposte o in conflitto e verificare lo stato di applicazione sui device reali.',
+            en: 'Intune is the management plane that deploys endpoint-security policies, baselines, EDR configuration, antivirus, firewall, encryption and ASR to managed devices. Integrated with Defender for Endpoint, it can consume device risk in compliance; Entra Conditional Access can then block or strengthen resource access when a device does not meet requirements. Avoid overlapping or conflicting policies and verify actual policy application on real devices.'
+          }
         }
       ],
       references: [
         {
           label: { it: 'Defender for Endpoint', en: 'Defender for Endpoint' },
           url: 'https://learn.microsoft.com/en-us/defender-endpoint/'
+        },
+        {
+          label: { it: 'Endpoint security in Microsoft Intune', en: 'Endpoint security in Microsoft Intune' },
+          url: 'https://learn.microsoft.com/en-us/intune/intune-service/protect/endpoint-security'
+        },
+        {
+          label: { it: 'Defender for Endpoint + Intune', en: 'Defender for Endpoint + Intune' },
+          url: 'https://learn.microsoft.com/en-us/intune/intune-service/protect/advanced-threat-protection-configure'
         }
       ]
     },
