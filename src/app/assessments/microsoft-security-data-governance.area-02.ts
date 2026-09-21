@@ -109,8 +109,8 @@ export const area2Questions: AssessmentQuestion[] = [
       "en": "Is there a common taxonomy for domains, datasets and documents?"
     },
     "example": {
-      "it": "Categorie come Tesseramento, Competizioni, Arbitraggio, Risorse Umane, Legale, Fornitori.",
-      "en": "Categories such as Registration, Competitions, Refereeing, Human Resources, Legal and Suppliers."
+      "it": "Categorie come Clienti, Vendite, Finance, Risorse Umane, Legale, Ricerca e Sviluppo, Fornitori.",
+      "en": "Categories such as Customers, Sales, Finance, Human Resources, Legal, Research and Development, and Suppliers."
     },
     "evidence": {
       "it": "Glossario, catalogo dati, struttura metadati.",
