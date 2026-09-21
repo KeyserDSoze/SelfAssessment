@@ -1,16 +1,19 @@
 import type {
+  ActionItem,
   AssessmentRun,
   EvidenceAttachment,
   StoredAssessment
 } from '../models';
 
 const DB_NAME = 'selfassessment-tech';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const RUNS_STORE = 'runs';
 const ASSESSMENTS_STORE = 'assessments';
 const ATTACHMENTS_STORE = 'attachments';
 const ATTACHMENTS_RUN_INDEX = 'runId';
 const ATTACHMENTS_QUESTION_INDEX = 'runQuestion';
+const ACTIONS_STORE = 'actions';
+const ACTIONS_RUN_INDEX = 'runId';
 
 function requestToPromise<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -51,6 +54,11 @@ async function openDb(): Promise<IDBDatabase> {
         { unique: false }
       );
     }
+
+    if (!db.objectStoreNames.contains(ACTIONS_STORE)) {
+      const store = db.createObjectStore(ACTIONS_STORE, { keyPath: 'id' });
+      store.createIndex(ACTIONS_RUN_INDEX, 'runId', { unique: false });
+    }
   };
 
   return requestToPromise(request);
@@ -88,7 +96,10 @@ export async function listRuns(): Promise<AssessmentRun[]> {
 
 export async function deleteRun(id: string): Promise<void> {
   const db = await openDb();
-  const tx = db.transaction([RUNS_STORE, ATTACHMENTS_STORE], 'readwrite');
+  const tx = db.transaction(
+    [RUNS_STORE, ATTACHMENTS_STORE, ACTIONS_STORE],
+    'readwrite'
+  );
 
   tx.objectStore(RUNS_STORE).delete(id);
 
@@ -99,6 +110,18 @@ export async function deleteRun(id: string): Promise<void> {
 
   cursorRequest.onsuccess = () => {
     const cursor = cursorRequest.result;
+    if (!cursor) return;
+    cursor.delete();
+    cursor.continue();
+  };
+
+  const actionStore = tx.objectStore(ACTIONS_STORE);
+  const actionCursorRequest = actionStore
+    .index(ACTIONS_RUN_INDEX)
+    .openCursor(IDBKeyRange.only(id));
+
+  actionCursorRequest.onsuccess = () => {
+    const cursor = actionCursorRequest.result;
     if (!cursor) return;
     cursor.delete();
     cursor.continue();
@@ -234,6 +257,55 @@ export async function deleteEvidenceAttachment(id: string): Promise<void> {
   const db = await openDb();
   const tx = db.transaction(ATTACHMENTS_STORE, 'readwrite');
   tx.objectStore(ATTACHMENTS_STORE).delete(id);
+  await transactionDone(tx);
+  db.close();
+}
+
+export async function putActionItem(action: ActionItem): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction(ACTIONS_STORE, 'readwrite');
+  tx.objectStore(ACTIONS_STORE).put(action);
+  await transactionDone(tx);
+  db.close();
+}
+
+export async function listActionItems(): Promise<ActionItem[]> {
+  const db = await openDb();
+  const tx = db.transaction(ACTIONS_STORE, 'readonly');
+  const values = await requestToPromise(
+    tx.objectStore(ACTIONS_STORE).getAll() as IDBRequest<ActionItem[]>
+  );
+  await transactionDone(tx);
+  db.close();
+  return values.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+
+export async function listActionItemsForRun(
+  runId: string
+): Promise<ActionItem[]> {
+  const db = await openDb();
+  const tx = db.transaction(ACTIONS_STORE, 'readonly');
+  const values = await requestToPromise(
+    tx
+      .objectStore(ACTIONS_STORE)
+      .index(ACTIONS_RUN_INDEX)
+      .getAll(IDBKeyRange.only(runId)) as IDBRequest<ActionItem[]>
+  );
+  await transactionDone(tx);
+  db.close();
+
+  const priorityRank = { high: 0, medium: 1, low: 2 };
+  return values.sort(
+    (a, b) =>
+      priorityRank[a.priority] - priorityRank[b.priority] ||
+      a.createdAt.localeCompare(b.createdAt)
+  );
+}
+
+export async function deleteActionItem(id: string): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction(ACTIONS_STORE, 'readwrite');
+  tx.objectStore(ACTIONS_STORE).delete(id);
   await transactionDone(tx);
   db.close();
 }
