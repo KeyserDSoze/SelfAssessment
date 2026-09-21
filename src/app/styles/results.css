@@ -23,3 +23,104 @@
 .export-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
 .loading-state { min-height: 60vh; display: grid; place-items: center; color: var(--muted); }
+
+.visibility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.visibility-card {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+
+.visibility-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.visibility-card-heading svg {
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.visibility-card-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.visibility-card-heading strong {
+  font-size: 1rem;
+}
+
+.visibility-card-heading span {
+  min-width: 27px;
+  height: 27px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.visibility-card > p {
+  margin: 10px 0 14px;
+  font-size: 13px;
+}
+
+.visibility-list {
+  display: grid;
+  gap: 8px;
+}
+
+.visibility-list a {
+  display: block;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+  transition: .18s ease;
+}
+
+.visibility-list a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.visibility-list span,
+.visibility-list strong {
+  display: block;
+}
+
+.visibility-list span {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.visibility-list strong {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.visibility-empty {
+  padding: 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 13px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .visibility-grid {
+    grid-template-columns: 1fr;
+  }
+}
