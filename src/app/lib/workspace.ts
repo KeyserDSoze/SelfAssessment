@@ -102,9 +102,14 @@ export function parseWorkspaceBackup(value: unknown): WorkspaceBackup {
     throw new Error('Invalid workspace backup');
   }
 
-  const candidate = value as Partial<
-    WorkspaceBackup & LegacyWorkspaceBackupV1
-  >;
+  const candidate = value as {
+    format?: string;
+    schemaVersion?: number;
+    exportedAt?: string;
+    runs?: AssessmentRun[];
+    assessments?: AssessmentDefinition[];
+    attachments?: SerializedEvidenceAttachment[];
+  };
 
   if (
     candidate.format !== 'selfassessment.tech/workspace' ||
