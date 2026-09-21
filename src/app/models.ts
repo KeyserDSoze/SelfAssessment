@@ -10,12 +10,24 @@ export type RunScope = 'essential' | 'all';
 export type ResponseType = 'scale' | 'binary';
 export type AnswerValue = number | 'yes' | 'no' | 'unknown' | 'na';
 
+export interface IntroDetail {
+  title: LocalizedText;
+  body: LocalizedText;
+}
+
+export interface IntroReference {
+  label: LocalizedText;
+  url: string;
+}
+
 export interface IntroSection {
   id: string;
   eyebrow?: LocalizedText;
   title: LocalizedText;
   body: LocalizedText;
   bullets?: LocalizedText[];
+  details?: IntroDetail[];
+  references?: IntroReference[];
 }
 
 export interface AssessmentQuestion {
