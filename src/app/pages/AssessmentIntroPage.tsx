@@ -20,6 +20,10 @@ export function AssessmentIntroPage() {
   const locale: Locale = i18n.language.startsWith('en') ? 'en' : 'it';
   const [assessment, setAssessment] = useState<AssessmentDefinition>();
   const [scope, setScope] = useState<RunScope>('essential');
+  const [organization, setOrganization] = useState('');
+  const [sessionName, setSessionName] = useState('');
+  const [participants, setParticipants] = useState('');
+  const [facilitator, setFacilitator] = useState('');
 
   useEffect(() => {
     void resolveAssessment(id).then(setAssessment);
@@ -39,6 +43,18 @@ export function AssessmentIntroPage() {
       locale,
       startedAt: now,
       updatedAt: now,
+      context:
+        organization.trim() ||
+        sessionName.trim() ||
+        participants.trim() ||
+        facilitator.trim()
+          ? {
+              organization: organization.trim() || undefined,
+              sessionName: sessionName.trim() || undefined,
+              participants: participants.trim() || undefined,
+              facilitator: facilitator.trim() || undefined
+            }
+          : undefined,
       answers: {}
     };
     await putRun(run);
@@ -106,6 +122,47 @@ export function AssessmentIntroPage() {
             <Sparkles size={15} /> {t('assessment.chooseScope')}
           </span>
           <h2>{t('assessment.chooseScope')}</h2>
+        </div>
+
+        <div className="session-context">
+          <div className="session-context-heading">
+            <h3>{t('assessment.sessionContext')}</h3>
+            <p>{t('assessment.sessionContextHint')}</p>
+          </div>
+          <div className="session-context-grid">
+            <label>
+              <span>{t('assessment.organization')}</span>
+              <input
+                value={organization}
+                placeholder={t('assessment.organizationPlaceholder')}
+                onChange={(event) => setOrganization(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>{t('assessment.sessionName')}</span>
+              <input
+                value={sessionName}
+                placeholder={t('assessment.sessionNamePlaceholder')}
+                onChange={(event) => setSessionName(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>{t('assessment.participants')}</span>
+              <input
+                value={participants}
+                placeholder={t('assessment.participantsPlaceholder')}
+                onChange={(event) => setParticipants(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>{t('assessment.facilitator')}</span>
+              <input
+                value={facilitator}
+                placeholder={t('assessment.facilitatorPlaceholder')}
+                onChange={(event) => setFacilitator(event.target.value)}
+              />
+            </label>
+          </div>
         </div>
 
         <div className="scope-grid">
