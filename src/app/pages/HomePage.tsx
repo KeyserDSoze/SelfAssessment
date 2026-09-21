@@ -212,7 +212,12 @@ export function HomePage() {
             {runs.map((run) => (
               <article className="recent-run" key={run.id}>
                 <div>
-                  <strong>{assessmentName(run.assessmentId)}</strong>
+                  <strong>
+                    {run.context?.sessionName || assessmentName(run.assessmentId)}
+                  </strong>
+                  {run.context?.organization && (
+                    <span>{run.context.organization}</span>
+                  )}
                   <span>
                     {new Date(run.updatedAt).toLocaleString(locale)}
                   </span>
