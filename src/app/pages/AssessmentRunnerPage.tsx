@@ -95,6 +95,7 @@ export function AssessmentRunnerPage() {
       </div>
 
       <QuestionCard
+        runId={run.id}
         question={question}
         answer={run.answers[question.id] ?? {}}
         onChange={updateAnswer}
