@@ -98,6 +98,15 @@ export async function listImportedAssessments(): Promise<StoredAssessment[]> {
   return values.sort((a, b) => b.importedAt.localeCompare(a.importedAt));
 }
 
+
+export async function deleteImportedAssessment(id: string): Promise<void> {
+  const db = await openDb();
+  const tx = db.transaction(ASSESSMENTS_STORE, 'readwrite');
+  tx.objectStore(ASSESSMENTS_STORE).delete(id);
+  await transactionDone(tx);
+  db.close();
+}
+
 export async function getImportedAssessment(
   id: string
 ): Promise<StoredAssessment | undefined> {
