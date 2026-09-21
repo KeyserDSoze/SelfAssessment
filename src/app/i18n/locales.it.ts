@@ -166,5 +166,7 @@ export const it = {
   "builder.errorMetadata": "Inserisci ID e titoli in entrambe le lingue.",
   "builder.errorDescriptions": "Completa descrizione breve ed estesa in entrambe le lingue.",
   "builder.errorIntro": "Ogni sezione introduttiva deve avere titolo e testo in italiano e inglese.",
-  "builder.errorQuestions": "Ogni domanda deve avere area, testo, esempio ed evidenza in italiano e inglese."
+  "builder.errorQuestions": "Ogni domanda deve avere area, testo, esempio ed evidenza in italiano e inglese.",
+  "builder.errorBuiltInId": "Questo ID è riservato a un assessment incluso nell’app. Scegli un ID diverso.",
+  "builder.errorInvalidDefinition": "La definizione non è valida: verifica che esista almeno una domanda Essenziale, che gli ID siano univoci e che i pesi siano validi."
 } as const;
