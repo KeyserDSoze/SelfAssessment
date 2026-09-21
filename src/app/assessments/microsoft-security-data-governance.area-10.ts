@@ -33,7 +33,7 @@ export const area10Questions: AssessmentQuestion[] = [
     },
     "track": "essential",
     "question": {
-      "it": "FIGC mantiene visibilità e capacità decisionale anche quando il servizio è gestito da consulenti?",
+      "it": "L’organizzazione mantiene visibilità e capacità decisionale anche quando il servizio è gestito da consulenti?",
       "en": "Does the organization retain visibility and decision-making capability when services are managed by consultants?"
     },
     "example": {

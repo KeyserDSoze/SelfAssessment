@@ -8,6 +8,8 @@ export interface AssessmentValidationIssue {
     | 'missing_intro'
     | 'missing_questions'
     | 'duplicate_intro_id'
+    | 'invalid_intro_detail'
+    | 'invalid_intro_reference'
     | 'duplicate_question_id'
     | 'invalid_question'
     | 'invalid_weight'
@@ -70,11 +72,42 @@ export function validateAssessmentDefinition(
       if (
         !section.id?.trim() ||
         !hasLocalizedText(section.title) ||
-        !hasLocalizedText(section.body)
+        !hasLocalizedText(section.body) ||
+        (section.eyebrow !== undefined && !hasLocalizedText(section.eyebrow)) ||
+        (section.bullets?.some((bullet) => !hasLocalizedText(bullet)) ?? false)
       ) {
         issues.push({
           code: 'missing_localized_text',
           path: `intro[${index}]`
+        });
+      }
+
+      if (
+        section.details?.some(
+          (detail) =>
+            !hasLocalizedText(detail.title) || !hasLocalizedText(detail.body)
+        )
+      ) {
+        issues.push({
+          code: 'invalid_intro_detail',
+          path: `intro[${index}].details`
+        });
+      }
+
+      if (
+        section.references?.some((reference) => {
+          if (!hasLocalizedText(reference.label)) return true;
+          try {
+            const url = new URL(reference.url);
+            return url.protocol !== 'https:';
+          } catch {
+            return true;
+          }
+        })
+      ) {
+        issues.push({
+          code: 'invalid_intro_reference',
+          path: `intro[${index}].references`
         });
       }
     }

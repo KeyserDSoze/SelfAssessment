@@ -10,6 +10,8 @@
 - Essential / Full assessment modes
 - IndexedDB autosave
 - Microsoft Security & Data Governance assessment
+- detailed Microsoft Learn-aligned pre-assessment technology walkthrough with official references
+- customer-neutral built-in examples and workshop placeholders
 - maturity scoring and area chart
 - priority gap list
 - JSON / CSV / HTML result export
