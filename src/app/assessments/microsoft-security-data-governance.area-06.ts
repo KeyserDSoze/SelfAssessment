@@ -37,8 +37,8 @@ export const area6Questions: AssessmentQuestion[] = [
       "en": "Is there a clear policy on which data may be entered into AI tools?"
     },
     "example": {
-      "it": "È vietato incollare dati di minori, sanitari, disciplinari o credenziali in strumenti non autorizzati.",
-      "en": "Users must not paste minors' data, health data, disciplinary data or credentials into unauthorized tools."
+      "it": "È vietato incollare dati personali, sanitari, finanziari, proprietà intellettuale o credenziali in strumenti AI non autorizzati.",
+      "en": "Users must not paste personal, health, financial, intellectual-property data or credentials into unauthorized AI tools."
     },
     "evidence": {
       "it": "AI acceptable use policy, comunicazioni, training.",
