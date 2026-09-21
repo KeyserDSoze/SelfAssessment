@@ -14,7 +14,11 @@ import type {
   AssessmentQuestion,
   IntroSection
 } from '../models';
-import { getImportedAssessment, putImportedAssessment } from '../lib/db';
+import {
+  deleteImportedAssessment,
+  getImportedAssessment,
+  putImportedAssessment
+} from '../lib/db';
 import { downloadAssessment } from '../lib/export';
 
 const emptyIntro = (): IntroSection => ({
@@ -192,6 +196,14 @@ export function AssessmentBuilderPage() {
     if (!assessment) return;
     downloadAssessment(assessment);
     setMessage(t('builder.downloaded'));
+  };
+
+  const removeImportedAssessment = async () => {
+    if (!editId) return;
+    if (!window.confirm(t('builder.deleteConfirm'))) return;
+
+    await deleteImportedAssessment(editId);
+    navigate('/');
   };
 
   const updateIntro = (
@@ -668,6 +680,15 @@ export function AssessmentBuilderPage() {
           {message && <strong className="form-success">{message}</strong>}
         </div>
         <div>
+          {editId && (
+            <button
+              className="button ghost danger-button"
+              onClick={() => void removeImportedAssessment()}
+            >
+              <Trash2 size={17} />
+              {t('builder.deleteAssessment')}
+            </button>
+          )}
           <button className="button secondary" onClick={download}>
             <Download size={17} />
             {t('actions.downloadAssessment')}
