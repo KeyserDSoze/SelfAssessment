@@ -54,3 +54,35 @@ Built-in or imported assessments can be exported as:
 ```
 
 This format is deliberately explicit and versioned so future migrations can be implemented safely.
+
+## Assessment Builder
+
+Custom assessments can be created directly in the PWA without editing JSON.
+
+The builder supports:
+
+- bilingual metadata and descriptions;
+- slide-like bilingual introduction sections;
+- Essential and Advanced questions;
+- scale or binary response types;
+- examples and evidence guidance;
+- technology scope and suggested owner;
+- local save to IndexedDB;
+- edit and delete for imported/custom assessments;
+- export to the portable assessment package.
+
+Built-in assessments remain code-managed and cannot be overwritten by a custom definition with the same ID.
+
+## History and comparison
+
+Every saved run contributes to the local history for its assessment.
+
+The history view shows:
+
+- overall maturity trend over time;
+- latest score and change against the previous run with the same depth;
+- per-area score deltas;
+- completion percentage and Unknown count;
+- links back to each historical result.
+
+Comparisons intentionally use the previous run with the same `scope` (Essential or Full) so the score denominator stays comparable.
