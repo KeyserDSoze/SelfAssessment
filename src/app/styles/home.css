@@ -83,3 +83,4 @@
 .recent-run strong, .recent-run span { display: block; }
 .recent-run span { color: var(--muted); font-size: 12px; margin-top: 5px; }
 .recent-actions { display: flex; gap: 8px; }
+.card-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
