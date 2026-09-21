@@ -23,13 +23,16 @@
 - edit / delete lifecycle for imported assessments
 - result history and maturity trend comparison
 - per-area delta comparison between comparable runs
+- editable action plan generated from low-score and Unknown gaps
+- action ownership, priority, status, target date and notes
+- action plan included in exports and workspace backup
 - GitHub Pages deployment workflow
 - CI workflow
 
 ## Next iterations
 
 - configurable scoring models
-- richer result action plans and recommendation templates
+- richer recommendation templates and reusable remediation playbooks
 - organization branding / white-label themes
 - optional encrypted backup file
 - optional cloud sync adapter
