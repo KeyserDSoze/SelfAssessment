@@ -166,5 +166,7 @@ export const en = {
   "builder.errorMetadata": "Enter an ID and titles in both languages.",
   "builder.errorDescriptions": "Complete short and long descriptions in both languages.",
   "builder.errorIntro": "Every intro section needs a title and body in Italian and English.",
-  "builder.errorQuestions": "Every question needs an area, text, example and evidence in Italian and English."
+  "builder.errorQuestions": "Every question needs an area, text, example and evidence in Italian and English.",
+  "builder.errorBuiltInId": "This ID is reserved by an assessment included in the app. Choose a different ID.",
+  "builder.errorInvalidDefinition": "The definition is invalid: check that at least one Essential question exists, IDs are unique and weights are valid."
 } as const;
