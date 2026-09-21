@@ -20,6 +20,8 @@ import {
   putImportedAssessment
 } from '../lib/db';
 import { downloadAssessment } from '../lib/export';
+import { getBuiltInAssessment } from '../assessments/catalog';
+import { validateAssessmentDefinition } from '../lib/assessment-validation';
 
 const emptyIntro = (): IntroSection => ({
   id: crypto.randomUUID(),
@@ -172,7 +174,19 @@ export function AssessmentBuilderPage() {
       return;
     }
 
-    return definition();
+    const assessment = definition();
+
+    if (getBuiltInAssessment(assessment.id)) {
+      setError(t('builder.errorBuiltInId'));
+      return;
+    }
+
+    if (validateAssessmentDefinition(assessment).length > 0) {
+      setError(t('builder.errorInvalidDefinition'));
+      return;
+    }
+
+    return assessment;
   };
 
   const save = async () => {
@@ -274,6 +288,7 @@ export function AssessmentBuilderPage() {
             <span>{t('builder.id')}</span>
             <input
               value={id}
+              disabled={Boolean(editId)}
               placeholder={resolvedId || 'security-assessment'}
               onChange={(event) => setId(event.target.value)}
             />
