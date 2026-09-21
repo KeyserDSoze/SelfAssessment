@@ -5,7 +5,10 @@ import type {
   Locale
 } from '../models';
 import { makeAssessmentPackage } from './assessment-package';
-import { listEvidenceAttachmentsForRun } from './db';
+import {
+  listActionItemsForRun,
+  listEvidenceAttachmentsForRun
+} from './db';
 import { localized } from './localize';
 import { calculateResults } from './scoring';
 import { serializeEvidenceAttachment } from './workspace';
@@ -33,7 +36,10 @@ function escapeHtml(value: unknown): string {
     .replaceAll('"', '&quot;');
 }
 
-export function answerLabel(value: AnswerValue | undefined, locale: Locale): string {
+export function answerLabel(
+  value: AnswerValue | undefined,
+  locale: Locale
+): string {
   const map = {
     it: { yes: 'Sì', no: 'No', unknown: 'Non so', na: 'N/A' },
     en: { yes: 'Yes', no: 'No', unknown: 'Unknown', na: 'N/A' }
@@ -60,7 +66,10 @@ export async function downloadResultJson(
   locale: Locale
 ): Promise<void> {
   const result = calculateResults(assessment, run, locale);
-  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const [attachments, actions] = await Promise.all([
+    listEvidenceAttachmentsForRun(run.id),
+    listActionItemsForRun(run.id)
+  ]);
   const serializedAttachments = await Promise.all(
     attachments.map(serializeEvidenceAttachment)
   );
@@ -70,7 +79,7 @@ export async function downloadResultJson(
     JSON.stringify(
       {
         format: 'selfassessment.tech/result',
-        schemaVersion: 2,
+        schemaVersion: 3,
         exportedAt: new Date().toISOString(),
         assessment: {
           id: assessment.id,
@@ -79,7 +88,8 @@ export async function downloadResultJson(
         },
         run,
         result,
-        evidenceAttachments: serializedAttachments
+        evidenceAttachments: serializedAttachments,
+        actionPlan: actions
       },
       null,
       2
@@ -94,7 +104,10 @@ export async function downloadResultCsv(
   locale: Locale
 ): Promise<void> {
   const result = calculateResults(assessment, run, locale);
-  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const [attachments, actions] = await Promise.all([
+    listEvidenceAttachmentsForRun(run.id),
+    listActionItemsForRun(run.id)
+  ]);
   const attachmentsByQuestion = new Map<string, string[]>();
 
   for (const attachment of attachments) {
@@ -137,7 +150,28 @@ export async function downloadResultCsv(
     (attachmentsByQuestion.get(item.question.id) ?? []).join(' | ')
   ]);
 
-  const csv = [header, ...rows]
+  const actionHeader = [
+    'ACTION PLAN',
+    'Title',
+    'Owner',
+    'Priority',
+    'Status',
+    'Target Date',
+    'Description',
+    'Notes'
+  ];
+  const actionRows = actions.map((action) => [
+    '',
+    action.title,
+    action.owner ?? '',
+    action.priority,
+    action.status,
+    action.targetDate ?? '',
+    action.description ?? '',
+    action.notes ?? ''
+  ]);
+
+  const csv = [header, ...rows, [], actionHeader, ...actionRows]
     .map((row) => row.map(escapeCsv).join(','))
     .join('\n');
 
@@ -155,7 +189,10 @@ export async function downloadResultHtml(
 ): Promise<void> {
   const result = calculateResults(assessment, run, locale);
   const title = localized(assessment.title, locale);
-  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const [attachments, actions] = await Promise.all([
+    listEvidenceAttachmentsForRun(run.id),
+    listActionItemsForRun(run.id)
+  ]);
   const attachmentsByQuestion = new Map<string, string[]>();
 
   for (const attachment of attachments) {
@@ -194,6 +231,30 @@ export async function downloadResultHtml(
       ? `<p>${attachments.length} evidence attachment(s) are referenced in this report. Binary files are included in the JSON result export and full workspace backup.</p>`
       : '';
 
+  const actionRows = actions
+    .map(
+      (action) => `
+        <tr>
+          <td>${escapeHtml(action.title)}</td>
+          <td>${escapeHtml(action.owner ?? '')}</td>
+          <td>${escapeHtml(action.priority)}</td>
+          <td>${escapeHtml(action.status)}</td>
+          <td>${escapeHtml(action.targetDate ?? '')}</td>
+          <td>${escapeHtml(action.description ?? '')}</td>
+          <td>${escapeHtml(action.notes ?? '')}</td>
+        </tr>`
+    )
+    .join('');
+
+  const actionPlanSection =
+    actions.length > 0
+      ? `<h2>Action plan</h2>
+<table>
+<thead><tr><th>Title</th><th>Owner</th><th>Priority</th><th>Status</th><th>Target date</th><th>Description</th><th>Notes</th></tr></thead>
+<tbody>${actionRows}</tbody>
+</table>`
+      : '';
+
   const html = `<!doctype html>
 <html lang="${locale}">
 <head>
@@ -202,7 +263,7 @@ export async function downloadResultHtml(
 <style>
 body{font-family:Inter,Arial,sans-serif;margin:40px;color:#152238}
 h1{margin-bottom:4px}.muted{color:#667085}.score{font-size:48px;font-weight:800;margin:24px 0}.context{margin:18px 0;padding:14px;background:#f5f7fa;border-radius:10px}.context div{margin:4px 0}
-table{width:100%;border-collapse:collapse;margin-top:28px}th,td{border:1px solid #dfe3e8;padding:10px;text-align:left;vertical-align:top}th{background:#f5f7fa}
+table{width:100%;border-collapse:collapse;margin:28px 0}th,td{border:1px solid #dfe3e8;padding:10px;text-align:left;vertical-align:top}th{background:#f5f7fa}
 </style>
 </head>
 <body>
@@ -216,8 +277,13 @@ ${attachmentSummary}
 <thead><tr><th>Area</th><th>Question</th><th>Response</th><th>Score</th><th>Notes</th><th>Attachments</th></tr></thead>
 <tbody>${rows}</tbody>
 </table>
+${actionPlanSection}
 </body>
 </html>`;
 
-  downloadText(`${assessment.id}-${run.id}.html`, html, 'text/html;charset=utf-8');
+  downloadText(
+    `${assessment.id}-${run.id}.html`,
+    html,
+    'text/html;charset=utf-8'
+  );
 }
