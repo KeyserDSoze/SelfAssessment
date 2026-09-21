@@ -4,9 +4,11 @@ import type {
   AssessmentRun,
   Locale
 } from '../models';
+import { makeAssessmentPackage } from './assessment-package';
+import { listEvidenceAttachmentsForRun } from './db';
 import { localized } from './localize';
 import { calculateResults } from './scoring';
-import { makeAssessmentPackage } from './assessment-package';
+import { serializeEvidenceAttachment } from './workspace';
 
 function downloadText(filename: string, content: string, type: string) {
   const blob = new Blob([content], { type });
@@ -52,18 +54,23 @@ export function downloadAssessment(
   );
 }
 
-export function downloadResultJson(
+export async function downloadResultJson(
   assessment: AssessmentDefinition,
   run: AssessmentRun,
   locale: Locale
-): void {
+): Promise<void> {
   const result = calculateResults(assessment, run, locale);
+  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const serializedAttachments = await Promise.all(
+    attachments.map(serializeEvidenceAttachment)
+  );
+
   downloadText(
     `${assessment.id}-${run.id}.result.json`,
     JSON.stringify(
       {
         format: 'selfassessment.tech/result',
-        schemaVersion: 1,
+        schemaVersion: 2,
         exportedAt: new Date().toISOString(),
         assessment: {
           id: assessment.id,
@@ -71,7 +78,8 @@ export function downloadResultJson(
           title: localized(assessment.title, locale)
         },
         run,
-        result
+        result,
+        evidenceAttachments: serializedAttachments
       },
       null,
       2
@@ -80,12 +88,21 @@ export function downloadResultJson(
   );
 }
 
-export function downloadResultCsv(
+export async function downloadResultCsv(
   assessment: AssessmentDefinition,
   run: AssessmentRun,
   locale: Locale
-): void {
+): Promise<void> {
   const result = calculateResults(assessment, run, locale);
+  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const attachmentsByQuestion = new Map<string, string[]>();
+
+  for (const attachment of attachments) {
+    const names = attachmentsByQuestion.get(attachment.questionId) ?? [];
+    names.push(attachment.name);
+    attachmentsByQuestion.set(attachment.questionId, names);
+  }
+
   const header = [
     'Area',
     'Track',
@@ -95,7 +112,8 @@ export function downloadResultCsv(
     'Weight',
     'Microsoft',
     'Owner',
-    'Notes'
+    'Notes',
+    'Attachments'
   ];
 
   const rows = result.scoredQuestions.map((item) => [
@@ -107,7 +125,8 @@ export function downloadResultCsv(
     item.question.weight,
     item.question.microsoft,
     item.question.owner,
-    item.answer.notes ?? ''
+    item.answer.notes ?? '',
+    (attachmentsByQuestion.get(item.question.id) ?? []).join(' | ')
   ]);
 
   const csv = [header, ...rows]
@@ -121,13 +140,22 @@ export function downloadResultCsv(
   );
 }
 
-export function downloadResultHtml(
+export async function downloadResultHtml(
   assessment: AssessmentDefinition,
   run: AssessmentRun,
   locale: Locale
-): void {
+): Promise<void> {
   const result = calculateResults(assessment, run, locale);
   const title = localized(assessment.title, locale);
+  const attachments = await listEvidenceAttachmentsForRun(run.id);
+  const attachmentsByQuestion = new Map<string, string[]>();
+
+  for (const attachment of attachments) {
+    const names = attachmentsByQuestion.get(attachment.questionId) ?? [];
+    names.push(attachment.name);
+    attachmentsByQuestion.set(attachment.questionId, names);
+  }
+
   const rows = result.scoredQuestions
     .map(
       (item) => `
@@ -137,9 +165,17 @@ export function downloadResultHtml(
           <td>${escapeHtml(answerLabel(item.answer.value, locale))}</td>
           <td>${escapeHtml(item.score ?? '')}</td>
           <td>${escapeHtml(item.answer.notes ?? '')}</td>
+          <td>${escapeHtml(
+            (attachmentsByQuestion.get(item.question.id) ?? []).join(', ')
+          )}</td>
         </tr>`
     )
     .join('');
+
+  const attachmentSummary =
+    attachments.length > 0
+      ? `<p>${attachments.length} evidence attachment(s) are referenced in this report. Binary files are included in the JSON result export and full workspace backup.</p>`
+      : '';
 
   const html = `<!doctype html>
 <html lang="${locale}">
@@ -157,8 +193,9 @@ table{width:100%;border-collapse:collapse;margin-top:28px}th,td{border:1px solid
 <div class="muted">SelfAssessment.tech · ${escapeHtml(run.updatedAt)}</div>
 <div class="score">${result.overallScore?.toFixed(1) ?? '—'} / 5</div>
 <p>${result.answeredCount}/${result.totalCount} answered · ${result.completionPercent}% complete · ${result.unknownCount} unknown</p>
+${attachmentSummary}
 <table>
-<thead><tr><th>Area</th><th>Question</th><th>Response</th><th>Score</th><th>Notes</th></tr></thead>
+<thead><tr><th>Area</th><th>Question</th><th>Response</th><th>Score</th><th>Notes</th><th>Attachments</th></tr></thead>
 <tbody>${rows}</tbody>
 </table>
 </body>
