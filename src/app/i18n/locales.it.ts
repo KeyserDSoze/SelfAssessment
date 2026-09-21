@@ -168,5 +168,10 @@ export const it = {
   "builder.errorIntro": "Ogni sezione introduttiva deve avere titolo e testo in italiano e inglese.",
   "builder.errorQuestions": "Ogni domanda deve avere area, testo, esempio ed evidenza in italiano e inglese.",
   "builder.errorBuiltInId": "Questo ID è riservato a un assessment incluso nell’app. Scegli un ID diverso.",
-  "builder.errorInvalidDefinition": "La definizione non è valida: verifica che esista almeno una domanda Essenziale, che gli ID siano univoci e che i pesi siano validi."
+  "builder.errorInvalidDefinition": "La definizione non è valida: verifica che esista almeno una domanda Essenziale, che gli ID siano univoci e che i pesi siano validi.",
+  "evidence.title": "Allegati di evidenza",
+  "evidence.hint": "File salvati solo in locale in IndexedDB. Massimo 5 file per domanda, 5 MB ciascuno.",
+  "evidence.add": "Aggiungi file",
+  "evidence.maxFiles": "Hai raggiunto il limite di 5 allegati per questa domanda.",
+  "evidence.tooLarge": "{{name}} supera il limite di {{size}}."
 } as const;
