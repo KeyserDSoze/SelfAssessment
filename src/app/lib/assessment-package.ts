@@ -1,4 +1,5 @@
 import type { AssessmentDefinition } from '../models';
+import { assertValidAssessmentDefinition } from './assessment-validation';
 
 export interface AssessmentPackage {
   format: 'selfassessment.tech/assessment';
@@ -30,17 +31,5 @@ export function parseAssessmentPackage(value: unknown): AssessmentDefinition {
     throw new Error('Invalid assessment package');
   }
 
-  const assessment = candidate.assessment;
-  if (
-    !assessment.id ||
-    !assessment.version ||
-    !assessment.title?.it ||
-    !assessment.title?.en ||
-    !Array.isArray(assessment.questions) ||
-    assessment.questions.length === 0
-  ) {
-    throw new Error('Invalid assessment definition');
-  }
-
-  return assessment;
+  return assertValidAssessmentDefinition(candidate.assessment);
 }
