@@ -109,7 +109,7 @@ export const area8Questions: AssessmentQuestion[] = [
       "en": "Do XDR incidents have agreed triage, ownership and SLAs with consultants?"
     },
     "example": {
-      "it": "È chiaro chi prende in carico un incidente, chi autorizza il contenimento e quando viene informata FIGC.",
+      "it": "È chiaro chi prende in carico un incidente, chi autorizza il contenimento e quando viene informata l’organizzazione.",
       "en": "It is clear who takes ownership of an incident, who authorizes containment and when the organization is informed."
     },
     "evidence": {
