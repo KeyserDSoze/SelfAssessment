@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight, BarChart3, CloudOff } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { QuestionCard } from '../components/QuestionCard';
 import type {
   AssessmentDefinition,
@@ -15,10 +15,12 @@ import { questionsForRun } from '../lib/scoring';
 export function AssessmentRunnerPage() {
   const { assessmentId = '', runId = '' } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [assessment, setAssessment] = useState<AssessmentDefinition>();
   const [run, setRun] = useState<AssessmentRun>();
   const [index, setIndex] = useState(0);
+  const appliedQuestionLink = useRef(false);
 
   useEffect(() => {
     void Promise.all([resolveAssessment(assessmentId), getRun(runId)]).then(
@@ -33,6 +35,19 @@ export function AssessmentRunnerPage() {
     () => (assessment && run ? questionsForRun(assessment, run) : []),
     [assessment, run]
   );
+
+  useEffect(() => {
+    if (appliedQuestionLink.current || questions.length === 0) return;
+    appliedQuestionLink.current = true;
+
+    const questionId = searchParams.get('question');
+    if (!questionId) return;
+
+    const linkedIndex = questions.findIndex((item) => item.id === questionId);
+    if (linkedIndex >= 0) {
+      setIndex(linkedIndex);
+    }
+  }, [questions, searchParams]);
 
   if (!assessment || !run || questions.length === 0) {
     return <div className="page loading-state">{t('common.loading')}</div>;
@@ -57,8 +72,15 @@ export function AssessmentRunnerPage() {
     void putRun(next);
   };
 
-  const goNext = () => {
+  const goNext = async () => {
     if (index === questions.length - 1) {
+      const completedRun: AssessmentRun = {
+        ...run,
+        updatedAt: new Date().toISOString(),
+        completedAt: run.completedAt ?? new Date().toISOString()
+      };
+      setRun(completedRun);
+      await putRun(completedRun);
       navigate(`/results/${run.id}`);
       return;
     }
@@ -111,7 +133,7 @@ export function AssessmentRunnerPage() {
           {t('actions.previous')}
         </button>
 
-        <button className="button primary" onClick={goNext}>
+        <button className="button primary" onClick={() => void goNext()}>
           {index === questions.length - 1 ? (
             <>
               <BarChart3 size={17} />
