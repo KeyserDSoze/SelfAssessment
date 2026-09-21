@@ -1,4 +1,4 @@
-import { ArrowRight, Clock3, FileCheck2 } from 'lucide-react';
+import { ArrowRight, Clock3, FileCheck2, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import type { AssessmentDefinition, Locale } from '../models';
@@ -49,10 +49,18 @@ export function AssessmentCard({ assessment, source }: Props) {
           </span>
         </div>
 
-        <Link className="button primary" to={`/assessment/${assessment.id}`}>
-          {t('actions.start')}
-          <ArrowRight size={17} />
-        </Link>
+        <div className="card-actions">
+          {source === 'imported' && (
+            <Link className="button ghost" to={`/builder/${assessment.id}`}>
+              <Pencil size={16} />
+              {t('actions.edit')}
+            </Link>
+          )}
+          <Link className="button primary" to={`/assessment/${assessment.id}`}>
+            {t('actions.start')}
+            <ArrowRight size={17} />
+          </Link>
+        </div>
       </div>
     </article>
   );
