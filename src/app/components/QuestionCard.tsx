@@ -7,14 +7,16 @@ import type {
   QuestionAnswer
 } from '../models';
 import { localized } from '../lib/localize';
+import { EvidenceAttachments } from './EvidenceAttachments';
 
 interface Props {
+  runId: string;
   question: AssessmentQuestion;
   answer: QuestionAnswer;
   onChange: (answer: QuestionAnswer) => void;
 }
 
-export function QuestionCard({ question, answer, onChange }: Props) {
+export function QuestionCard({ runId, question, answer, onChange }: Props) {
   const { t, i18n } = useTranslation();
   const locale: Locale = i18n.language.startsWith('en') ? 'en' : 'it';
 
@@ -125,6 +127,8 @@ export function QuestionCard({ question, answer, onChange }: Props) {
             rows={4}
           />
         </label>
+
+        <EvidenceAttachments runId={runId} questionId={question.id} />
       </div>
     </section>
   );
