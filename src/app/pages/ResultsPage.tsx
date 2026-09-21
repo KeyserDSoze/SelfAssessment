@@ -91,6 +91,34 @@ export function ResultsPage() {
         <span className="hero-kicker">{t('results.title')}</span>
         <h1>{localized(assessment.title, locale)}</h1>
         <p>{t('results.subtitle')}</p>
+        {run.context && (
+          <div className="result-context">
+            {run.context.organization && (
+              <span>
+                <small>{t('assessment.organization')}</small>
+                <strong>{run.context.organization}</strong>
+              </span>
+            )}
+            {run.context.sessionName && (
+              <span>
+                <small>{t('assessment.sessionName')}</small>
+                <strong>{run.context.sessionName}</strong>
+              </span>
+            )}
+            {run.context.participants && (
+              <span>
+                <small>{t('assessment.participants')}</small>
+                <strong>{run.context.participants}</strong>
+              </span>
+            )}
+            {run.context.facilitator && (
+              <span>
+                <small>{t('assessment.facilitator')}</small>
+                <strong>{run.context.facilitator}</strong>
+              </span>
+            )}
+          </div>
+        )}
       </section>
 
       <div className="metric-grid">
