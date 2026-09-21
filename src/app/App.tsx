@@ -14,6 +14,7 @@ export function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/builder" element={<AssessmentBuilderPage />} />
+          <Route path="/builder/:id" element={<AssessmentBuilderPage />} />
           <Route path="/assessment/:id" element={<AssessmentIntroPage />} />
           <Route path="/assessment/:id/history" element={<AssessmentHistoryPage />} />
           <Route
