@@ -116,6 +116,44 @@ export function AssessmentRunnerPage() {
         </div>
       </div>
 
+      <section className="question-map-shell" aria-label={t('runner.questionMap')}>
+        <div className="question-map-heading">
+          <strong>{t('runner.questionMap')}</strong>
+          <div className="question-map-legend">
+            <span><i className="legend-dot answered" />{t('runner.statusAnswered')}</span>
+            <span><i className="legend-dot unknown" />{t('runner.statusUnknown')}</span>
+            <span><i className="legend-dot unanswered" />{t('runner.statusUnanswered')}</span>
+          </div>
+        </div>
+        <div className="question-map">
+          {questions.map((item, itemIndex) => {
+            const value = run.answers[item.id]?.value;
+            const status =
+              value === 'unknown'
+                ? 'unknown'
+                : value === undefined
+                  ? 'unanswered'
+                  : 'answered';
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`question-map-button ${status} ${itemIndex === index ? 'current' : ''}`}
+                onClick={() => {
+                  setIndex(itemIndex);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                title={`${t('runner.jumpTo')} ${itemIndex + 1} · ${t(`runner.status${status[0].toUpperCase()}${status.slice(1)}`)}`}
+                aria-current={itemIndex === index ? 'step' : undefined}
+              >
+                {itemIndex + 1}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
       <QuestionCard
         runId={run.id}
         question={question}
