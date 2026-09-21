@@ -109,3 +109,21 @@ export interface EvidenceAttachment {
   createdAt: string;
   blob: Blob;
 }
+
+export type ActionPriority = 'high' | 'medium' | 'low';
+export type ActionStatus = 'open' | 'in_progress' | 'done';
+
+export interface ActionItem {
+  id: string;
+  runId: string;
+  questionId?: string;
+  title: string;
+  description?: string;
+  owner?: string;
+  priority: ActionPriority;
+  status: ActionStatus;
+  targetDate?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
