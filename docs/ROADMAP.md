@@ -16,16 +16,17 @@
 - browser print / save-to-PDF
 - assessment package import/export
 - complete local workspace backup / restore
+- visual assessment builder for custom assessments
+- edit / delete lifecycle for imported assessments
+- result history and maturity trend comparison
+- per-area delta comparison between comparable runs
 - GitHub Pages deployment workflow
 - CI workflow
 
 ## Next iterations
 
-- assessment authoring UI instead of JSON-only authoring
 - richer validation and package migration
 - evidence attachments stored in IndexedDB
-- result comparison across repeated runs
-- trend charts over time
 - configurable scoring models
 - organization branding / white-label themes
 - optional encrypted backup file
