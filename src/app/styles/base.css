@@ -18,6 +18,9 @@
   --shadow: 0 18px 60px rgba(34, 55, 86, .11);
   --shadow-soft: 0 8px 28px rgba(34, 55, 86, .08);
   --radius: 20px;
+  --scrollbar-track: var(--bg);
+  --scrollbar-thumb: color-mix(in srgb, var(--muted) 52%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--accent) 72%, var(--muted));
 }
 
 :root[data-theme="dark"] {
@@ -41,8 +44,35 @@
 }
 
 * { box-sizing: border-box; }
-html { min-height: 100%; background: var(--bg); }
+html {
+  min-height: 100%;
+  background: var(--bg);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--text); }
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+*::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  border: 2px solid var(--scrollbar-track);
+  border-radius: 999px;
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
 button, input, textarea, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; text-decoration: none; }
@@ -80,7 +110,20 @@ h3 { letter-spacing: -.02em; }
   background: var(--surface); box-shadow: var(--shadow-soft); cursor: pointer;
 }
 .icon-button.compact { padding: 0 11px; }
-.select-control select { border: 0; background: transparent; color: var(--text); outline: 0; }
+.select-control select {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  color-scheme: light;
+  outline: 0;
+}
+.select-control select option {
+  background: var(--surface);
+  color: var(--text);
+}
+:root[data-theme="dark"] .select-control select {
+  color-scheme: dark;
+}
 .nav-home span { display: inline; }
 
 .page { width: min(1280px, calc(100% - 36px)); margin: 0 auto; padding: 54px 0 80px; }
