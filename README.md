@@ -19,7 +19,8 @@ A local-first Progressive Web App for reusable self-assessments, evidence collec
 - result export to JSON, CSV and HTML
 - print / save-to-PDF
 - GitHub Pages deployment
-- first built-in assessment: **Microsoft Security & Data Governance** with 67 questions
+- built-in **Microsoft Security & Data Governance** assessment with 67 questions
+- built-in **Microsoft Agentic AI Readiness** assessment with 18 Essential / 62 Full questions
 
 ## Run locally
 
@@ -45,4 +46,4 @@ tests/                 Unit tests
 .github/workflows/     CI and GitHub Pages deployment
 ```
 
-See [`docs/PRODUCT.md`](docs/PRODUCT.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the product and architecture rationale.
+See [`docs/PRODUCT.md`](docs/PRODUCT.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/MICROSOFT_AGENTIC_AI_READINESS.md`](docs/MICROSOFT_AGENTIC_AI_READINESS.md) for product and assessment rationale.
