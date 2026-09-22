@@ -12,7 +12,7 @@ describe('Microsoft Agentic AI Readiness assessment', () => {
   it('offers a minimal Essential scope and a comprehensive Full scope', () => {
     expect(agenticAiReadiness.questions).toHaveLength(62);
     expect(agenticAiReadiness.questions.filter((question) => question.track === 'essential')).toHaveLength(18);
-    expect(new Set(agenticAiReadiness.questions.map((question) => question.area.it))).toHaveLength(11);
+    expect(new Set(agenticAiReadiness.questions.map((question) => question.area.it)).size).toBe(11);
   });
 
   it('keeps accountability, identity, regulation and evaluation as high-weight guardrails', () => {
