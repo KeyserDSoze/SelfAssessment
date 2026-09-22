@@ -340,7 +340,7 @@
 
 .intro-references {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   margin-top: 18px;
   padding-top: 14px;
@@ -391,6 +391,7 @@
   }
 
   .intro-references {
+    align-items: flex-start;
     flex-direction: column;
   }
 }
