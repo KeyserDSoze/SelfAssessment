@@ -80,7 +80,20 @@ h3 { letter-spacing: -.02em; }
   background: var(--surface); box-shadow: var(--shadow-soft); cursor: pointer;
 }
 .icon-button.compact { padding: 0 11px; }
-.select-control select { border: 0; background: transparent; color: var(--text); outline: 0; }
+.select-control select {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  color-scheme: light;
+  outline: 0;
+}
+.select-control select option {
+  background: var(--surface);
+  color: var(--text);
+}
+:root[data-theme="dark"] .select-control select {
+  color-scheme: dark;
+}
 .nav-home span { display: inline; }
 
 .page { width: min(1280px, calc(100% - 36px)); margin: 0 auto; padding: 54px 0 80px; }
