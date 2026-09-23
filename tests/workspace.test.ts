@@ -17,6 +17,7 @@ describe('workspace backup', () => {
     assessmentVersion: microsoftSecurityDataGovernance.version,
     scope: 'essential',
     locale: 'it',
+    autoAdvance: true,
     startedAt: '2026-09-21T10:00:00.000Z',
     updatedAt: '2026-09-21T10:10:00.000Z',
     answers: {
@@ -64,6 +65,7 @@ describe('workspace backup', () => {
     expect(parsed.attachments).toHaveLength(1);
     expect(parsed.actions).toHaveLength(1);
     expect(parsed.runs[0].answers['1'].value).toBe('yes');
+    expect(parsed.runs[0].autoAdvance).toBe(true);
   });
 
   it('migrates legacy schema v1 backups without attachments', () => {
