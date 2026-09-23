@@ -24,6 +24,7 @@ export function AssessmentIntroPage() {
   const [sessionName, setSessionName] = useState('');
   const [participants, setParticipants] = useState('');
   const [facilitator, setFacilitator] = useState('');
+  const [autoAdvance, setAutoAdvance] = useState(false);
 
   useEffect(() => {
     void resolveAssessment(id).then(setAssessment);
@@ -43,6 +44,7 @@ export function AssessmentIntroPage() {
       locale,
       startedAt: now,
       updatedAt: now,
+      autoAdvance,
       context:
         organization.trim() ||
         sessionName.trim() ||
@@ -226,6 +228,18 @@ export function AssessmentIntroPage() {
             </small>
           </button>
         </div>
+
+        <label className={`quick-mode-option ${autoAdvance ? 'active' : ''}`}>
+          <input
+            type="checkbox"
+            checked={autoAdvance}
+            onChange={(event) => setAutoAdvance(event.target.checked)}
+          />
+          <span className="quick-mode-copy">
+            <strong>{t('assessment.quickMode')}</strong>
+            <small>{t('assessment.quickModeBody')}</small>
+          </span>
+        </label>
 
         <button className="button primary large" onClick={() => void start()}>
           {t('assessment.begin')}
