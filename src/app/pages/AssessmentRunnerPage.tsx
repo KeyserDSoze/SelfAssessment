@@ -21,6 +21,7 @@ export function AssessmentRunnerPage() {
   const [run, setRun] = useState<AssessmentRun>();
   const [index, setIndex] = useState(0);
   const appliedQuestionLink = useRef(false);
+  const autoAdvanceInFlight = useRef(false);
 
   useEffect(() => {
     void Promise.all([resolveAssessment(assessmentId), getRun(runId)]).then(
@@ -59,7 +60,25 @@ export function AssessmentRunnerPage() {
   ).length;
   const progress = Math.round((answered / questions.length) * 100);
 
+  const goNext = async (sourceRun: AssessmentRun = run) => {
+    if (index === questions.length - 1) {
+      const completedRun: AssessmentRun = {
+        ...sourceRun,
+        updatedAt: new Date().toISOString(),
+        completedAt: sourceRun.completedAt ?? new Date().toISOString()
+      };
+      setRun(completedRun);
+      await putRun(completedRun);
+      navigate(`/results/${sourceRun.id}`);
+      return;
+    }
+
+    setIndex((value) => Math.min(questions.length - 1, value + 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const updateAnswer = (answer: QuestionAnswer) => {
+    const previousValue = run.answers[question.id]?.value;
     const next: AssessmentRun = {
       ...run,
       updatedAt: new Date().toISOString(),
@@ -68,24 +87,39 @@ export function AssessmentRunnerPage() {
         [question.id]: answer
       }
     };
-    setRun(next);
-    void putRun(next);
-  };
 
-  const goNext = async () => {
-    if (index === questions.length - 1) {
-      const completedRun: AssessmentRun = {
-        ...run,
-        updatedAt: new Date().toISOString(),
-        completedAt: run.completedAt ?? new Date().toISOString()
-      };
-      setRun(completedRun);
-      await putRun(completedRun);
-      navigate(`/results/${run.id}`);
+    setRun(next);
+
+    const shouldAutoAdvance =
+      Boolean(next.autoAdvance) &&
+      answer.value !== undefined &&
+      answer.value !== previousValue &&
+      !autoAdvanceInFlight.current;
+
+    if (!shouldAutoAdvance) {
+      void putRun(next);
       return;
     }
-    setIndex((value) => Math.min(questions.length - 1, value + 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    autoAdvanceInFlight.current = true;
+    void (async () => {
+      try {
+        await putRun(next);
+        await goNext(next);
+      } finally {
+        autoAdvanceInFlight.current = false;
+      }
+    })();
+  };
+
+  const setAutoAdvance = (enabled: boolean) => {
+    const next: AssessmentRun = {
+      ...run,
+      autoAdvance: enabled,
+      updatedAt: new Date().toISOString()
+    };
+    setRun(next);
+    void putRun(next);
   };
 
   return (
@@ -171,19 +205,33 @@ export function AssessmentRunnerPage() {
           {t('actions.previous')}
         </button>
 
-        <button className="button primary" onClick={() => void goNext()}>
-          {index === questions.length - 1 ? (
-            <>
-              <BarChart3 size={17} />
-              {t('actions.results')}
-            </>
-          ) : (
-            <>
-              {t('actions.next')}
-              <ArrowRight size={17} />
-            </>
-          )}
-        </button>
+        <div className="runner-nav-actions">
+          <label
+            className={`auto-advance-toggle ${run.autoAdvance ? 'active' : ''}`}
+            title={t('runner.autoAdvanceHint')}
+          >
+            <input
+              type="checkbox"
+              checked={Boolean(run.autoAdvance)}
+              onChange={(event) => setAutoAdvance(event.target.checked)}
+            />
+            <span>{t('runner.autoAdvance')}</span>
+          </label>
+
+          <button className="button primary" onClick={() => void goNext()}>
+            {index === questions.length - 1 ? (
+              <>
+                <BarChart3 size={17} />
+                {t('actions.results')}
+              </>
+            ) : (
+              <>
+                {t('actions.next')}
+                <ArrowRight size={17} />
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
