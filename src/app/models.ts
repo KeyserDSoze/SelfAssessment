@@ -78,6 +78,7 @@ export interface AssessmentRun {
   updatedAt: string;
   completedAt?: string;
   context?: AssessmentRunContext;
+  autoAdvance?: boolean;
   answers: Record<string, QuestionAnswer>;
 }
 
