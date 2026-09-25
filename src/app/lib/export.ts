@@ -302,13 +302,20 @@ export async function downloadResultHtml(
     : '';
 
   const areaRows = result.areaScores
-    .map(
-      (item) => `<tr>
+    .map((item) => {
+      const width =
+        item.score === null
+          ? 0
+          : Math.max(0, Math.min(100, item.score * 20));
+      return `<tr>
         <td>${escapeHtml(item.area)}</td>
-        <td>${escapeHtml(item.score === null ? '—' : item.score.toFixed(1))}</td>
+        <td>
+          ${escapeHtml(item.score === null ? '—' : item.score.toFixed(1))} / 5
+          <span class="area-bar"><i style="width:${width}%"></i></span>
+        </td>
         <td>${item.answered}/${item.total}</td>
-      </tr>`
-    )
+      </tr>`;
+    })
     .join('');
 
   const attachmentSummary =
@@ -333,42 +340,84 @@ export async function downloadResultHtml(
 
   const actionPlanSection =
     data.actions.length > 0
-      ? `<h2>${escapeHtml(labels.actionPlan)}</h2>
+      ? `<div class="section-title"><span>03</span><h2>${escapeHtml(labels.actionPlan)}</h2></div>
 <table>
 <thead><tr><th>Title</th><th>${labels.owner}</th><th>${labels.priority}</th><th>${labels.status}</th><th>${labels.targetDate}</th><th>${labels.description}</th><th>${labels.notes}</th></tr></thead>
 <tbody>${actionRows}</tbody>
 </table>`
       : '';
 
+  const accent = /^#[0-9a-f]{6}$/i.test(assessment.accent)
+    ? assessment.accent
+    : '#136de2';
   const html = `<!doctype html>
 <html lang="${locale}">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escapeHtml(data.title)} - SelfAssessment</title>
 <style>
-body{font-family:Inter,Arial,sans-serif;margin:40px;color:#152238}
-h1{margin-bottom:4px}h2{margin-top:32px}.muted{color:#667085}.score{font-size:48px;font-weight:800;margin:24px 0}.context{margin:18px 0;padding:14px;background:#f5f7fa;border-radius:10px}.context div{margin:4px 0}
-table{width:100%;border-collapse:collapse;margin:20px 0 28px}th,td{border:1px solid #dfe3e8;padding:9px;text-align:left;vertical-align:top}th{background:#f5f7fa}
+:root{--accent:${accent};--soft:color-mix(in srgb,var(--accent) 12%,white);--ink:#102038;--muted:#68778d;--line:#dde5ef;--bg:#eef3f8}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.report{width:min(1120px,calc(100% - 32px));margin:24px auto 56px;background:white;border-radius:26px;overflow:hidden;box-shadow:0 18px 55px rgba(24,52,81,.10)}
+.hero{position:relative;overflow:hidden;padding:54px 58px 48px;color:white;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#755cff))}
+.hero:after{content:"";position:absolute;right:-120px;top:-190px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.09)}
+.brand{position:relative;z-index:1;display:flex;justify-content:space-between;gap:16px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hero h1{position:relative;z-index:1;margin:42px 0 8px;max-width:850px;font-size:clamp(2.4rem,6vw,4.5rem);line-height:.98;letter-spacing:-.055em}
+.hero p{position:relative;z-index:1;margin:0;opacity:.82}
+.body{padding:34px 40px 48px}
+.context{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;background:none}
+.context div{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7f9fc}
+.metrics{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;margin-bottom:32px}
+.metric{padding:19px;border:1px solid var(--line);border-radius:17px;background:#f7f9fc}
+.metric.primary{background:linear-gradient(145deg,var(--soft),white);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.metric small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.metric strong{display:block;margin-top:14px;font-size:2.6rem;letter-spacing:-.05em}
+.metric.primary strong{color:var(--accent)}
+.section-title{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
+.section-title span{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:var(--soft);color:var(--accent);font-size:11px;font-weight:900}
+.section-title h2{margin:0;font-size:1.55rem;letter-spacing:-.03em}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:0 0 26px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:#f7f9fc;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even) td{background:#fbfcfe}
+.area-table td:nth-child(2){font-weight:900;color:var(--accent);white-space:nowrap}
+.area-bar{display:block;width:180px;max-width:100%;height:7px;margin-top:6px;border-radius:99px;background:#edf1f6;overflow:hidden}
+.area-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 50%,#8b76ff))}
+.score-hero{display:inline-flex;align-items:baseline;gap:5px;color:var(--accent)}
+.score-hero b{font-size:2.5rem;letter-spacing:-.05em}
+.note{margin:16px 0;padding:13px 15px;border-left:3px solid var(--accent);border-radius:0 12px 12px 0;background:var(--soft);color:var(--muted)}
+.footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:10px}
+@media(max-width:800px){.report{width:calc(100% - 16px);margin:8px auto}.hero{padding:32px 22px}.body{padding:22px 16px 32px}.context,.metrics{grid-template-columns:1fr}table{display:block;overflow-x:auto}}
+@media print{@page{size:A4;margin:12mm}html,body{background:white}.report{width:100%;margin:0;box-shadow:none;border-radius:0;overflow:visible}.hero,.metric,th,.note{-webkit-print-color-adjust:exact;print-color-adjust:exact}.body{padding:20px 0}.section-title,table{break-inside:avoid-page}}
 </style>
 </head>
 <body>
-<h1>${escapeHtml(data.title)}</h1>
-<div class="muted">SelfAssessment.tech · ${escapeHtml(labels.updated)}: ${escapeHtml(new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US'))}</div>
+<main class="report">
+<header class="hero">
+  <div class="brand"><span>SelfAssessment.tech</span><span>${escapeHtml(labels.updated)} · ${escapeHtml(new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US'))}</span></div>
+  <h1>${escapeHtml(data.title)}</h1>
+  <p>${escapeHtml(localized(assessment.shortDescription, locale))}</p>
+</header>
+<div class="body">
 ${contextSummary}
-<div class="score">${result.overallScore?.toFixed(1) ?? '—'} / 5</div>
-<p>${result.answeredCount}/${result.totalCount} ${escapeHtml(labels.answered)} · ${result.completionPercent}% ${escapeHtml(labels.completion.toLowerCase())} · ${result.unknownCount} ${escapeHtml(labels.unknown.toLowerCase())}</p>
-<h2>${escapeHtml(labels.areaScores)}</h2>
-<table>
-<thead><tr><th>${labels.area}</th><th>${labels.score}</th><th>${labels.coverage}</th></tr></thead>
-<tbody>${areaRows}</tbody>
-</table>
-${attachmentSummary}
-<h2>${escapeHtml(labels.questions)}</h2>
-<table>
-<thead><tr><th>${labels.area}</th><th>${labels.question}</th><th>${labels.response}</th><th>${labels.score}</th><th>${labels.notes}</th><th>${labels.attachments}</th></tr></thead>
-<tbody>${rows}</tbody>
-</table>
+<section class="metrics">
+  <article class="metric primary"><small>${escapeHtml(labels.overall)}</small><strong>${result.overallScore?.toFixed(1) ?? '—'} / 5</strong></article>
+  <article class="metric"><small>${escapeHtml(labels.completion)}</small><strong>${result.completionPercent}%</strong></article>
+  <article class="metric"><small>${escapeHtml(labels.unknown)}</small><strong>${result.unknownCount}</strong></article>
+</section>
+<div class="section-title"><span>01</span><h2>${escapeHtml(labels.areaScores)}</h2></div>
+<table class="area-table"><thead><tr><th>${labels.area}</th><th>${labels.score}</th><th>${labels.coverage}</th></tr></thead><tbody>${areaRows}</tbody></table>
+${attachmentSummary ? `<div class="note">${attachmentSummary}</div>` : ''}
+<div class="section-title"><span>02</span><h2>${escapeHtml(labels.questions)}</h2></div>
+<table><thead><tr><th>${labels.area}</th><th>${labels.question}</th><th>${labels.response}</th><th>${labels.score}</th><th>${labels.notes}</th><th>${labels.attachments}</th></tr></thead><tbody>${rows}</tbody></table>
 ${actionPlanSection}
+<div class="footer"><span>SelfAssessment.tech</span><span>${escapeHtml(new Date(run.updatedAt).toLocaleDateString(locale === 'it' ? 'it-IT' : 'en-US'))}</span></div>
+</div>
+</main>
 </body>
 </html>`;
 
@@ -395,6 +444,24 @@ export async function downloadResultPdf(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const contentWidth = pageWidth - margin * 2;
+  const accentHex = /^#[0-9a-f]{6}$/i.test(assessment.accent)
+    ? assessment.accent
+    : '#136de2';
+  const toRgb = (hex: string): [number, number, number] => [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16)
+  ];
+  const accent = toRgb(accentHex);
+  const ink: [number, number, number] = [16, 32, 56];
+  const muted: [number, number, number] = [101, 117, 141];
+  const line: [number, number, number] = [222, 230, 239];
+  const surface: [number, number, number] = [247, 249, 252];
+  const soft: [number, number, number] = [
+    Math.round(255 - (255 - accent[0]) * 0.12),
+    Math.round(255 - (255 - accent[1]) * 0.12),
+    Math.round(255 - (255 - accent[2]) * 0.12)
+  ];
   let y = margin;
 
   const normalize = (value: string) =>
@@ -419,6 +486,7 @@ export async function downloadResultPdf(
   ) => {
     pdf.setFont('helvetica', bold ? 'bold' : 'normal');
     pdf.setFontSize(fontSize);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
     pdf.setLineHeightFactor(1.25);
     const lines = pdf.splitTextToSize(normalize(text), contentWidth) as string[];
     const blockHeight = Math.max(1, lines.length) * fontSize * 1.25 + after;
@@ -427,10 +495,52 @@ export async function downloadResultPdf(
     y += blockHeight;
   };
 
+  let headingIndex = 0;
   const heading = (text: string) => {
-    ensureSpace(28);
-    y += 5;
-    write(text, 14, true, 9);
+    headingIndex += 1;
+    ensureSpace(38);
+    pdf.setFillColor(soft[0], soft[1], soft[2]);
+    pdf.roundedRect(margin, y, 30, 30, 8, 8, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
+    pdf.setTextColor(accent[0], accent[1], accent[2]);
+    pdf.text(String(headingIndex).padStart(2, '0'), margin + 15, y + 19, { align: 'center' });
+    pdf.setFontSize(15);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    pdf.text(normalize(text), margin + 42, y + 19);
+    y += 42;
+  };
+
+  const card = (title: string, body = '', accentStrip = false) => {
+    const titleLines = pdf.splitTextToSize(normalize(title), contentWidth - 38) as string[];
+    pdf.setFontSize(9);
+    const bodyLines = body
+      ? (pdf.splitTextToSize(normalize(body), contentWidth - 38) as string[])
+      : [];
+    const height =
+      30 + titleLines.length * 12 + (bodyLines.length ? 7 + bodyLines.length * 11 : 0);
+    ensureSpace(height + 8);
+    pdf.setFillColor(surface[0], surface[1], surface[2]);
+    pdf.setDrawColor(line[0], line[1], line[2]);
+    pdf.roundedRect(margin, y, contentWidth, height, 10, 10, 'FD');
+    if (accentStrip) {
+      pdf.setFillColor(accent[0], accent[1], accent[2]);
+      pdf.roundedRect(margin, y, 5, height, 2, 2, 'F');
+    }
+    let localY = y + 18;
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    pdf.text(titleLines, margin + 18, localY);
+    localY += titleLines.length * 12;
+    if (bodyLines.length) {
+      localY += 6;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(muted[0], muted[1], muted[2]);
+      pdf.text(bodyLines, margin + 18, localY);
+    }
+    y += height + 8;
   };
 
   pdf.setProperties({
@@ -439,62 +549,116 @@ export async function downloadResultPdf(
     creator: 'SelfAssessment.tech'
   });
 
-  write(data.title, 20, true, 6);
-  write(
-    `SelfAssessment.tech · ${data.labels.updated}: ${new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}`,
-    9,
-    false,
-    12
+  const heroHeight = 176;
+  pdf.setFillColor(accent[0], accent[1], accent[2]);
+  pdf.rect(0, 0, pageWidth, heroHeight, 'F');
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('SELFASSESSMENT.TECH', margin, 36);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.text(
+    `${data.labels.updated}: ${new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}`,
+    pageWidth - margin,
+    36,
+    { align: 'right' }
   );
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(26);
+  const titleLines = pdf.splitTextToSize(normalize(data.title), contentWidth - 70) as string[];
+  pdf.text(titleLines.slice(0, 3), margin, 78);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(10);
+  const subtitleLines = pdf.splitTextToSize(
+    normalize(localized(assessment.shortDescription, locale)),
+    contentWidth - 90
+  ) as string[];
+  pdf.text(subtitleLines.slice(0, 3), margin, 128);
+  y = heroHeight + 24;
 
-  if (run.context?.organization) {
-    write(`${data.labels.organization}: ${run.context.organization}`, 10, true, 2);
-  }
-  if (run.context?.sessionName) {
-    write(`${data.labels.session}: ${run.context.sessionName}`, 10, false, 2);
-  }
-  if (run.context?.participants) {
-    write(`${data.labels.participants}: ${run.context.participants}`, 10, false, 2);
-  }
-  if (run.context?.facilitator) {
-    write(`${data.labels.facilitator}: ${run.context.facilitator}`, 10, false, 7);
+  const contextParts = [
+    run.context?.organization ? `${data.labels.organization}: ${run.context.organization}` : '',
+    run.context?.sessionName ? `${data.labels.session}: ${run.context.sessionName}` : '',
+    run.context?.participants ? `${data.labels.participants}: ${run.context.participants}` : '',
+    run.context?.facilitator ? `${data.labels.facilitator}: ${run.context.facilitator}` : ''
+  ].filter(Boolean);
+  if (contextParts.length) {
+    card(locale === 'it' ? 'Contesto sessione' : 'Session context', contextParts.join('   |   '));
   }
 
-  write(
-    `${data.labels.overall}: ${data.result.overallScore?.toFixed(1) ?? '-'} / 5`,
-    18,
-    true,
-    4
-  );
-  write(
-    `${data.labels.completion}: ${data.result.completionPercent}% · ${data.result.answeredCount}/${data.result.totalCount} ${data.labels.answered} · ${data.result.unknownCount} ${data.labels.unknown}`,
-    10,
-    false,
-    10
-  );
+  const metricGap = 9;
+  const metricWidth = (contentWidth - metricGap * 2) / 3;
+  const metricY = y;
+  const metrics = [
+    [data.labels.overall, `${data.result.overallScore?.toFixed(1) ?? '-'} / 5`, true],
+    [data.labels.completion, `${data.result.completionPercent}%`, false],
+    [data.labels.unknown, String(data.result.unknownCount), false]
+  ] as const;
+  metrics.forEach(([label, value, primary], index) => {
+    const x = margin + index * (metricWidth + metricGap);
+    pdf.setFillColor(...(primary ? soft : surface));
+    pdf.setDrawColor(...(primary ? accent : line));
+    pdf.roundedRect(x, metricY, metricWidth, 84, 10, 10, 'FD');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7.5);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text(normalize(label.toUpperCase()), x + 13, metricY + 20);
+    pdf.setFontSize(primary ? 23 : 21);
+    pdf.setTextColor(...(primary ? accent : ink));
+    pdf.text(normalize(value), x + 13, metricY + 55);
+  });
+  y += 102;
 
   heading(data.labels.areaScores);
   for (const area of data.result.areaScores) {
-    write(
-      `${area.area}: ${area.score === null ? '-' : area.score.toFixed(1)} / 5 · ${area.answered}/${area.total}`,
-      10,
-      false,
-      3
+    ensureSpace(48);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9.5);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    const areaLines = pdf.splitTextToSize(normalize(area.area), 315) as string[];
+    pdf.text(areaLines, margin, y);
+    pdf.setFontSize(9);
+    pdf.setTextColor(accent[0], accent[1], accent[2]);
+    pdf.text(
+      area.score === null ? '-' : `${area.score.toFixed(1)} / 5`,
+      pageWidth - margin,
+      y,
+      { align: 'right' }
     );
+    y += Math.max(12, areaLines.length * 11) + 5;
+    const barWidth = contentWidth - 92;
+    pdf.setFillColor(235, 240, 246);
+    pdf.roundedRect(margin, y, barWidth, 7, 3.5, 3.5, 'F');
+    if (area.score !== null) {
+      pdf.setFillColor(accent[0], accent[1], accent[2]);
+      pdf.roundedRect(
+        margin,
+        y,
+        Math.max(2, (barWidth * Math.min(5, Math.max(0, area.score))) / 5),
+        7,
+        3.5,
+        3.5,
+        'F'
+      );
+    }
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text(`${area.answered}/${area.total}`, pageWidth - margin, y + 7, { align: 'right' });
+    y += 19;
   }
 
   heading(data.labels.priorityGaps);
   if (data.result.gaps.length === 0) {
-    write(data.labels.noGaps, 10, false, 4);
+    card(data.labels.noGaps);
   } else {
     for (const gap of data.result.gaps.slice(0, 15)) {
-      write(
+      card(
         `${gap.score?.toFixed(0) ?? '-'} / 5 · ${localized(gap.question.area, locale)}`,
-        10,
-        true,
-        2
+        localized(gap.question.question, locale),
+        true
       );
-      write(localized(gap.question.question, locale), 10, false, 3);
     }
   }
 
@@ -511,50 +675,40 @@ export async function downloadResultPdf(
   heading(data.labels.questions);
   data.result.scoredQuestions.forEach((item, index) => {
     const attachments = data.attachmentsByQuestion.get(item.question.id) ?? [];
-    write(
-      `${index + 1}. ${localized(item.question.question, locale)}`,
-      10,
-      true,
-      3
+    const body = [
+      `${data.labels.response}: ${answerLabel(item.answer.value, locale) || '-'}   |   ${data.labels.score}: ${item.score ?? '-'}   |   ${data.labels.weight}: x${item.question.weight}`,
+      `${localized(item.question.area, locale)}   |   Microsoft: ${item.question.microsoft}   |   ${data.labels.owner}: ${item.question.owner}`,
+      item.answer.notes ? `${data.labels.notes}: ${item.answer.notes}` : '',
+      attachments.length ? `${data.labels.attachments}: ${attachments.join(', ')}` : ''
+    ].filter(Boolean).join('\n');
+    card(
+      `${String(index + 1).padStart(2, '0')}  ${localized(item.question.question, locale)}`,
+      body
     );
-    write(
-      `${data.labels.area}: ${localized(item.question.area, locale)} · ${data.labels.response}: ${answerLabel(item.answer.value, locale) || '-'} · ${data.labels.score}: ${item.score ?? '-'} · ${data.labels.weight}: ${item.question.weight}`,
-      9,
-      false,
-      2
-    );
-    if (item.answer.notes) {
-      write(`${data.labels.notes}: ${item.answer.notes}`, 9, false, 2);
-    }
-    if (attachments.length > 0) {
-      write(
-        `${data.labels.attachments}: ${attachments.join(', ')}`,
-        9,
-        false,
-        4
-      );
-    } else {
-      y += 3;
-    }
   });
 
   if (data.actions.length > 0) {
     heading(data.labels.actionPlan);
     data.actions.forEach((action, index) => {
-      write(`${index + 1}. ${action.title}`, 10, true, 2);
-      write(
-        `${data.labels.owner}: ${action.owner ?? '-'} · ${data.labels.priority}: ${action.priority} · ${data.labels.status}: ${action.status}${action.targetDate ? ` · ${data.labels.targetDate}: ${action.targetDate}` : ''}`,
-        9,
-        false,
-        2
-      );
-      if (action.description) {
-        write(`${data.labels.description}: ${action.description}`, 9, false, 2);
-      }
-      if (action.notes) {
-        write(`${data.labels.notes}: ${action.notes}`, 9, false, 4);
-      }
+      const body = [
+        `${data.labels.owner}: ${action.owner ?? '-'}   |   ${data.labels.priority}: ${action.priority}   |   ${data.labels.status}: ${action.status}${action.targetDate ? `   |   ${data.labels.targetDate}: ${action.targetDate}` : ''}`,
+        action.description ? `${data.labels.description}: ${action.description}` : '',
+        action.notes ? `${data.labels.notes}: ${action.notes}` : ''
+      ].filter(Boolean).join('\n');
+      card(`${index + 1}. ${action.title}`, body, true);
     });
+  }
+
+  const pages = pdf.getNumberOfPages();
+  for (let page = 1; page <= pages; page += 1) {
+    pdf.setPage(page);
+    pdf.setDrawColor(line[0], line[1], line[2]);
+    pdf.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text('SelfAssessment.tech', margin, pageHeight - 18);
+    pdf.text(`${page} / ${pages}`, pageWidth - margin, pageHeight - 18, { align: 'right' });
   }
 
   pdf.save(`${assessment.id}-${run.id}.pdf`);
