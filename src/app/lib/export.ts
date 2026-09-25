@@ -340,37 +340,79 @@ export async function downloadResultHtml(
 </table>`
       : '';
 
-  const html = `<!doctype html>
+  const accent = /^#[0-9a-f]{6}$/i.test(assessment.accent)
+    ? assessment.accent
+    : '#136de2';
+  const html = \`<!doctype html>
 <html lang="${locale}">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escapeHtml(data.title)} - SelfAssessment</title>
 <style>
-body{font-family:Inter,Arial,sans-serif;margin:40px;color:#152238}
-h1{margin-bottom:4px}h2{margin-top:32px}.muted{color:#667085}.score{font-size:48px;font-weight:800;margin:24px 0}.context{margin:18px 0;padding:14px;background:#f5f7fa;border-radius:10px}.context div{margin:4px 0}
-table{width:100%;border-collapse:collapse;margin:20px 0 28px}th,td{border:1px solid #dfe3e8;padding:9px;text-align:left;vertical-align:top}th{background:#f5f7fa}
+:root{--accent:${accent};--soft:color-mix(in srgb,var(--accent) 12%,white);--ink:#102038;--muted:#68778d;--line:#dde5ef;--bg:#eef3f8}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.report{width:min(1120px,calc(100% - 32px));margin:24px auto 56px;background:white;border-radius:26px;overflow:hidden;box-shadow:0 18px 55px rgba(24,52,81,.10)}
+.hero{position:relative;overflow:hidden;padding:54px 58px 48px;color:white;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#755cff))}
+.hero:after{content:"";position:absolute;right:-120px;top:-190px;width:360px;height:360px;border-radius:50%;background:rgba(255,255,255,.09)}
+.brand{position:relative;z-index:1;display:flex;justify-content:space-between;gap:16px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hero h1{position:relative;z-index:1;margin:42px 0 8px;max-width:850px;font-size:clamp(2.4rem,6vw,4.5rem);line-height:.98;letter-spacing:-.055em}
+.hero p{position:relative;z-index:1;margin:0;opacity:.82}
+.body{padding:34px 40px 48px}
+.context{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;background:none}
+.context div{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7f9fc}
+.metrics{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px;margin-bottom:32px}
+.metric{padding:19px;border:1px solid var(--line);border-radius:17px;background:#f7f9fc}
+.metric.primary{background:linear-gradient(145deg,var(--soft),white);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+.metric small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.metric strong{display:block;margin-top:14px;font-size:2.6rem;letter-spacing:-.05em}
+.metric.primary strong{color:var(--accent)}
+.section-title{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
+.section-title span{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:var(--soft);color:var(--accent);font-size:11px;font-weight:900}
+.section-title h2{margin:0;font-size:1.55rem;letter-spacing:-.03em}
+table{width:100%;border-collapse:separate;border-spacing:0;margin:0 0 26px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:#f7f9fc;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even) td{background:#fbfcfe}
+.area-table td:nth-child(2){font-weight:900;color:var(--accent);white-space:nowrap}
+.area-bar{display:block;width:180px;max-width:100%;height:7px;margin-top:6px;border-radius:99px;background:#edf1f6;overflow:hidden}
+.area-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 50%,#8b76ff))}
+.score-hero{display:inline-flex;align-items:baseline;gap:5px;color:var(--accent)}
+.score-hero b{font-size:2.5rem;letter-spacing:-.05em}
+.note{margin:16px 0;padding:13px 15px;border-left:3px solid var(--accent);border-radius:0 12px 12px 0;background:var(--soft);color:var(--muted)}
+.footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:10px}
+@media(max-width:800px){.report{width:calc(100% - 16px);margin:8px auto}.hero{padding:32px 22px}.body{padding:22px 16px 32px}.context,.metrics{grid-template-columns:1fr}table{display:block;overflow-x:auto}}
+@media print{@page{size:A4;margin:12mm}html,body{background:white}.report{width:100%;margin:0;box-shadow:none;border-radius:0;overflow:visible}.hero,.metric,th,.note{-webkit-print-color-adjust:exact;print-color-adjust:exact}.body{padding:20px 0}.section-title,table{break-inside:avoid-page}}
 </style>
 </head>
 <body>
-<h1>${escapeHtml(data.title)}</h1>
-<div class="muted">SelfAssessment.tech · ${escapeHtml(labels.updated)}: ${escapeHtml(new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US'))}</div>
+<main class="report">
+<header class="hero">
+  <div class="brand"><span>SelfAssessment.tech</span><span>${escapeHtml(labels.updated)} · ${escapeHtml(new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US'))}</span></div>
+  <h1>${escapeHtml(data.title)}</h1>
+  <p>${escapeHtml(localized(assessment.shortDescription, locale))}</p>
+</header>
+<div class="body">
 ${contextSummary}
-<div class="score">${result.overallScore?.toFixed(1) ?? '—'} / 5</div>
-<p>${result.answeredCount}/${result.totalCount} ${escapeHtml(labels.answered)} · ${result.completionPercent}% ${escapeHtml(labels.completion.toLowerCase())} · ${result.unknownCount} ${escapeHtml(labels.unknown.toLowerCase())}</p>
-<h2>${escapeHtml(labels.areaScores)}</h2>
-<table>
-<thead><tr><th>${labels.area}</th><th>${labels.score}</th><th>${labels.coverage}</th></tr></thead>
-<tbody>${areaRows}</tbody>
-</table>
-${attachmentSummary}
-<h2>${escapeHtml(labels.questions)}</h2>
-<table>
-<thead><tr><th>${labels.area}</th><th>${labels.question}</th><th>${labels.response}</th><th>${labels.score}</th><th>${labels.notes}</th><th>${labels.attachments}</th></tr></thead>
-<tbody>${rows}</tbody>
-</table>
+<section class="metrics">
+  <article class="metric primary"><small>${escapeHtml(labels.overall)}</small><strong>${result.overallScore?.toFixed(1) ?? '—'} / 5</strong></article>
+  <article class="metric"><small>${escapeHtml(labels.completion)}</small><strong>${result.completionPercent}%</strong></article>
+  <article class="metric"><small>${escapeHtml(labels.unknown)}</small><strong>${result.unknownCount}</strong></article>
+</section>
+<div class="section-title"><span>01</span><h2>${escapeHtml(labels.areaScores)}</h2></div>
+<table class="area-table"><thead><tr><th>${labels.area}</th><th>${labels.score}</th><th>${labels.coverage}</th></tr></thead><tbody>${areaRows}</tbody></table>
+${attachmentSummary ? \`<div class="note">${attachmentSummary}</div>\` : ''}
+<div class="section-title"><span>02</span><h2>${escapeHtml(labels.questions)}</h2></div>
+<table><thead><tr><th>${labels.area}</th><th>${labels.question}</th><th>${labels.response}</th><th>${labels.score}</th><th>${labels.notes}</th><th>${labels.attachments}</th></tr></thead><tbody>${rows}</tbody></table>
 ${actionPlanSection}
+<div class="footer"><span>SelfAssessment.tech</span><span>${escapeHtml(new Date(run.updatedAt).toLocaleDateString(locale === 'it' ? 'it-IT' : 'en-US'))}</span></div>
+</div>
+</main>
 </body>
-</html>`;
+</html>\`;
 
   downloadText(
     `${assessment.id}-${run.id}.html`,
