@@ -302,13 +302,20 @@ export async function downloadResultHtml(
     : '';
 
   const areaRows = result.areaScores
-    .map(
-      (item) => `<tr>
+    .map((item) => {
+      const width =
+        item.score === null
+          ? 0
+          : Math.max(0, Math.min(100, item.score * 20));
+      return `<tr>
         <td>${escapeHtml(item.area)}</td>
-        <td>${escapeHtml(item.score === null ? '—' : item.score.toFixed(1))}</td>
+        <td>
+          ${escapeHtml(item.score === null ? '—' : item.score.toFixed(1))} / 5
+          <span class="area-bar"><i style="width:${width}%"></i></span>
+        </td>
         <td>${item.answered}/${item.total}</td>
-      </tr>`
-    )
+      </tr>`;
+    })
     .join('');
 
   const attachmentSummary =
@@ -333,7 +340,7 @@ export async function downloadResultHtml(
 
   const actionPlanSection =
     data.actions.length > 0
-      ? `<h2>${escapeHtml(labels.actionPlan)}</h2>
+      ? `<div class="section-title"><span>03</span><h2>${escapeHtml(labels.actionPlan)}</h2></div>
 <table>
 <thead><tr><th>Title</th><th>${labels.owner}</th><th>${labels.priority}</th><th>${labels.status}</th><th>${labels.targetDate}</th><th>${labels.description}</th><th>${labels.notes}</th></tr></thead>
 <tbody>${actionRows}</tbody>
@@ -488,14 +495,16 @@ export async function downloadResultPdf(
     y += blockHeight;
   };
 
+  let headingIndex = 0;
   const heading = (text: string) => {
+    headingIndex += 1;
     ensureSpace(38);
     pdf.setFillColor(soft[0], soft[1], soft[2]);
     pdf.roundedRect(margin, y, 30, 30, 8, 8, 'F');
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
     pdf.setTextColor(accent[0], accent[1], accent[2]);
-    pdf.text(String(Math.max(1, Math.round((y + 1) / 100))).padStart(2, '0'), margin + 15, y + 19, { align: 'center' });
+    pdf.text(String(headingIndex).padStart(2, '0'), margin + 15, y + 19, { align: 'center' });
     pdf.setFontSize(15);
     pdf.setTextColor(ink[0], ink[1], ink[2]);
     pdf.text(normalize(text), margin + 42, y + 19);
