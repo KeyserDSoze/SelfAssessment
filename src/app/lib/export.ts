@@ -350,7 +350,7 @@ export async function downloadResultHtml(
   const accent = /^#[0-9a-f]{6}$/i.test(assessment.accent)
     ? assessment.accent
     : '#136de2';
-  const html = \`<!doctype html>
+  const html = `<!doctype html>
 <html lang="${locale}">
 <head>
 <meta charset="utf-8">
@@ -411,7 +411,7 @@ ${contextSummary}
 </section>
 <div class="section-title"><span>01</span><h2>${escapeHtml(labels.areaScores)}</h2></div>
 <table class="area-table"><thead><tr><th>${labels.area}</th><th>${labels.score}</th><th>${labels.coverage}</th></tr></thead><tbody>${areaRows}</tbody></table>
-${attachmentSummary ? \`<div class="note">${attachmentSummary}</div>\` : ''}
+${attachmentSummary ? `<div class="note">${attachmentSummary}</div>` : ''}
 <div class="section-title"><span>02</span><h2>${escapeHtml(labels.questions)}</h2></div>
 <table><thead><tr><th>${labels.area}</th><th>${labels.question}</th><th>${labels.response}</th><th>${labels.score}</th><th>${labels.notes}</th><th>${labels.attachments}</th></tr></thead><tbody>${rows}</tbody></table>
 ${actionPlanSection}
@@ -419,7 +419,7 @@ ${actionPlanSection}
 </div>
 </main>
 </body>
-</html>\`;
+</html>`;
 
   downloadText(
     `${assessment.id}-${run.id}.html`,
