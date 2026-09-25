@@ -512,13 +512,32 @@ export async function downloadResultPdf(
   };
 
   const card = (title: string, body = '', accentStrip = false) => {
-    const titleLines = pdf.splitTextToSize(normalize(title), contentWidth - 38) as string[];
+    const horizontalPadding = 20;
+    const textWidth = contentWidth - horizontalPadding * 2;
+
+    // splitTextToSize uses the currently active font metrics and size.
+    // Set the exact rendering font before wrapping so long titles cannot
+    // be measured at a smaller size and then overflow when drawn.
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    const titleLines = pdf.splitTextToSize(
+      normalize(title),
+      textWidth
+    ) as string[];
+
+    pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(9);
     const bodyLines = body
-      ? (pdf.splitTextToSize(normalize(body), contentWidth - 38) as string[])
+      ? (pdf.splitTextToSize(normalize(body), textWidth) as string[])
       : [];
+
+    const titleLineHeight = 12.5;
+    const bodyLineHeight = 11.25;
     const height =
-      30 + titleLines.length * 12 + (bodyLines.length ? 7 + bodyLines.length * 11 : 0);
+      28 +
+      titleLines.length * titleLineHeight +
+      (bodyLines.length ? 7 + bodyLines.length * bodyLineHeight : 0);
+
     ensureSpace(height + 8);
     pdf.setFillColor(surface[0], surface[1], surface[2]);
     pdf.setDrawColor(line[0], line[1], line[2]);
@@ -527,19 +546,24 @@ export async function downloadResultPdf(
       pdf.setFillColor(accent[0], accent[1], accent[2]);
       pdf.roundedRect(margin, y, 5, height, 2, 2, 'F');
     }
+
     let localY = y + 18;
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(10);
     pdf.setTextColor(ink[0], ink[1], ink[2]);
-    pdf.text(titleLines, margin + 18, localY);
-    localY += titleLines.length * 12;
+    pdf.setLineHeightFactor(1.25);
+    pdf.text(titleLines, margin + horizontalPadding, localY);
+
+    localY += titleLines.length * titleLineHeight;
     if (bodyLines.length) {
       localY += 6;
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(9);
       pdf.setTextColor(muted[0], muted[1], muted[2]);
-      pdf.text(bodyLines, margin + 18, localY);
+      pdf.setLineHeightFactor(1.25);
+      pdf.text(bodyLines, margin + horizontalPadding, localY);
     }
+
     y += height + 8;
   };
 
