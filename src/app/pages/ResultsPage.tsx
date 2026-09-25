@@ -17,7 +17,9 @@ import { getRun } from '../lib/db';
 import {
   downloadResultCsv,
   downloadResultHtml,
-  downloadResultJson
+  downloadResultJson,
+  downloadResultPdf,
+  downloadResultWord
 } from '../lib/export';
 import { localized } from '../lib/localize';
 import { calculateResults, maturityKey } from '../lib/scoring';
@@ -292,6 +294,20 @@ export function ResultsPage() {
           >
             <FileText size={17} />
             {t('actions.exportHtml')}
+          </button>
+          <button
+            className="button secondary"
+            onClick={() => void downloadResultWord(assessment, run, locale)}
+          >
+            <FileText size={17} />
+            {t('actions.exportWord')}
+          </button>
+          <button
+            className="button secondary"
+            onClick={() => void downloadResultPdf(assessment, run, locale)}
+          >
+            <FileText size={17} />
+            {t('actions.exportPdf')}
           </button>
           <button className="button primary" onClick={() => window.print()}>
             <Printer size={17} />
