@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'og-cover-v2.jpg'],
       manifest: {
         name: 'SelfAssessment',
         short_name: 'SelfAssessment',
@@ -28,7 +28,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,json}']
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,ico,json}']
       }
     })
   ]
