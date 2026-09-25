@@ -1,4 +1,4 @@
-import { ArrowLeft, CircleHelp, Download, FileText, History, ListChecks, Printer, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CircleHelp, Download, FileText, History, ListChecks, Printer, RotateCcw, Share2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -24,6 +24,7 @@ import {
 import { localized } from '../lib/localize';
 import { calculateResults, maturityKey } from '../lib/scoring';
 import { ActionPlanPanel } from '../components/ActionPlanPanel';
+import { ShareRunDialog } from '../components/ShareRunDialog';
 
 export function ResultsPage() {
   const { runId = '' } = useParams();
@@ -31,6 +32,7 @@ export function ResultsPage() {
   const locale: Locale = i18n.language.startsWith('en') ? 'en' : 'it';
   const [run, setRun] = useState<AssessmentRun>();
   const [assessment, setAssessment] = useState<AssessmentDefinition>();
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     void getRun(runId).then(async (savedRun) => {
@@ -76,6 +78,14 @@ export function ResultsPage() {
           {t('actions.back')}
         </Link>
         <div className="toolbar-actions">
+          <button
+            className="button secondary"
+            type="button"
+            onClick={() => setShareOpen(true)}
+          >
+            <Share2 size={17} />
+            {t('actions.share')}
+          </button>
           <Link
             className="button secondary"
             to={`/assessment/${assessment.id}/history`}
@@ -266,6 +276,14 @@ export function ResultsPage() {
         run={run}
         result={result}
         locale={locale}
+      />
+
+      <ShareRunDialog
+        assessment={assessment}
+        run={run}
+        locale={locale}
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
       />
 
       <section className="export-panel">

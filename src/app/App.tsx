@@ -6,6 +6,7 @@ import { AssessmentIntroPage } from './pages/AssessmentIntroPage';
 import { AssessmentRunnerPage } from './pages/AssessmentRunnerPage';
 import { HomePage } from './pages/HomePage';
 import { ResultsPage } from './pages/ResultsPage';
+import { SharedAssessmentPage } from './pages/SharedAssessmentPage';
 
 export function App() {
   return (
@@ -22,6 +23,7 @@ export function App() {
             element={<AssessmentRunnerPage />}
           />
           <Route path="/results/:runId" element={<ResultsPage />} />
+          <Route path="/share/:assessmentId" element={<SharedAssessmentPage />} />
         </Routes>
       </AppShell>
     </HashRouter>
