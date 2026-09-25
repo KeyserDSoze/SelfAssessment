@@ -437,6 +437,24 @@ export async function downloadResultPdf(
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const contentWidth = pageWidth - margin * 2;
+  const accentHex = /^#[0-9a-f]{6}$/i.test(assessment.accent)
+    ? assessment.accent
+    : '#136de2';
+  const toRgb = (hex: string): [number, number, number] => [
+    parseInt(hex.slice(1, 3), 16),
+    parseInt(hex.slice(3, 5), 16),
+    parseInt(hex.slice(5, 7), 16)
+  ];
+  const accent = toRgb(accentHex);
+  const ink: [number, number, number] = [16, 32, 56];
+  const muted: [number, number, number] = [101, 117, 141];
+  const line: [number, number, number] = [222, 230, 239];
+  const surface: [number, number, number] = [247, 249, 252];
+  const soft: [number, number, number] = [
+    Math.round(255 - (255 - accent[0]) * 0.12),
+    Math.round(255 - (255 - accent[1]) * 0.12),
+    Math.round(255 - (255 - accent[2]) * 0.12)
+  ];
   let y = margin;
 
   const normalize = (value: string) =>
@@ -461,6 +479,7 @@ export async function downloadResultPdf(
   ) => {
     pdf.setFont('helvetica', bold ? 'bold' : 'normal');
     pdf.setFontSize(fontSize);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
     pdf.setLineHeightFactor(1.25);
     const lines = pdf.splitTextToSize(normalize(text), contentWidth) as string[];
     const blockHeight = Math.max(1, lines.length) * fontSize * 1.25 + after;
@@ -470,9 +489,49 @@ export async function downloadResultPdf(
   };
 
   const heading = (text: string) => {
-    ensureSpace(28);
-    y += 5;
-    write(text, 14, true, 9);
+    ensureSpace(38);
+    pdf.setFillColor(soft[0], soft[1], soft[2]);
+    pdf.roundedRect(margin, y, 30, 30, 8, 8, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
+    pdf.setTextColor(accent[0], accent[1], accent[2]);
+    pdf.text(String(Math.max(1, Math.round((y + 1) / 100))).padStart(2, '0'), margin + 15, y + 19, { align: 'center' });
+    pdf.setFontSize(15);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    pdf.text(normalize(text), margin + 42, y + 19);
+    y += 42;
+  };
+
+  const card = (title: string, body = '', accentStrip = false) => {
+    const titleLines = pdf.splitTextToSize(normalize(title), contentWidth - 38) as string[];
+    pdf.setFontSize(9);
+    const bodyLines = body
+      ? (pdf.splitTextToSize(normalize(body), contentWidth - 38) as string[])
+      : [];
+    const height =
+      30 + titleLines.length * 12 + (bodyLines.length ? 7 + bodyLines.length * 11 : 0);
+    ensureSpace(height + 8);
+    pdf.setFillColor(surface[0], surface[1], surface[2]);
+    pdf.setDrawColor(line[0], line[1], line[2]);
+    pdf.roundedRect(margin, y, contentWidth, height, 10, 10, 'FD');
+    if (accentStrip) {
+      pdf.setFillColor(accent[0], accent[1], accent[2]);
+      pdf.roundedRect(margin, y, 5, height, 2, 2, 'F');
+    }
+    let localY = y + 18;
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(10);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    pdf.text(titleLines, margin + 18, localY);
+    localY += titleLines.length * 12;
+    if (bodyLines.length) {
+      localY += 6;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(muted[0], muted[1], muted[2]);
+      pdf.text(bodyLines, margin + 18, localY);
+    }
+    y += height + 8;
   };
 
   pdf.setProperties({
@@ -481,62 +540,116 @@ export async function downloadResultPdf(
     creator: 'SelfAssessment.tech'
   });
 
-  write(data.title, 20, true, 6);
-  write(
-    `SelfAssessment.tech · ${data.labels.updated}: ${new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}`,
-    9,
-    false,
-    12
+  const heroHeight = 176;
+  pdf.setFillColor(accent[0], accent[1], accent[2]);
+  pdf.rect(0, 0, pageWidth, heroHeight, 'F');
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text('SELFASSESSMENT.TECH', margin, 36);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.text(
+    `${data.labels.updated}: ${new Date(run.updatedAt).toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}`,
+    pageWidth - margin,
+    36,
+    { align: 'right' }
   );
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(26);
+  const titleLines = pdf.splitTextToSize(normalize(data.title), contentWidth - 70) as string[];
+  pdf.text(titleLines.slice(0, 3), margin, 78);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(10);
+  const subtitleLines = pdf.splitTextToSize(
+    normalize(localized(assessment.shortDescription, locale)),
+    contentWidth - 90
+  ) as string[];
+  pdf.text(subtitleLines.slice(0, 3), margin, 128);
+  y = heroHeight + 24;
 
-  if (run.context?.organization) {
-    write(`${data.labels.organization}: ${run.context.organization}`, 10, true, 2);
-  }
-  if (run.context?.sessionName) {
-    write(`${data.labels.session}: ${run.context.sessionName}`, 10, false, 2);
-  }
-  if (run.context?.participants) {
-    write(`${data.labels.participants}: ${run.context.participants}`, 10, false, 2);
-  }
-  if (run.context?.facilitator) {
-    write(`${data.labels.facilitator}: ${run.context.facilitator}`, 10, false, 7);
+  const contextParts = [
+    run.context?.organization ? `${data.labels.organization}: ${run.context.organization}` : '',
+    run.context?.sessionName ? `${data.labels.session}: ${run.context.sessionName}` : '',
+    run.context?.participants ? `${data.labels.participants}: ${run.context.participants}` : '',
+    run.context?.facilitator ? `${data.labels.facilitator}: ${run.context.facilitator}` : ''
+  ].filter(Boolean);
+  if (contextParts.length) {
+    card(locale === 'it' ? 'Contesto sessione' : 'Session context', contextParts.join('   |   '));
   }
 
-  write(
-    `${data.labels.overall}: ${data.result.overallScore?.toFixed(1) ?? '-'} / 5`,
-    18,
-    true,
-    4
-  );
-  write(
-    `${data.labels.completion}: ${data.result.completionPercent}% · ${data.result.answeredCount}/${data.result.totalCount} ${data.labels.answered} · ${data.result.unknownCount} ${data.labels.unknown}`,
-    10,
-    false,
-    10
-  );
+  const metricGap = 9;
+  const metricWidth = (contentWidth - metricGap * 2) / 3;
+  const metricY = y;
+  const metrics = [
+    [data.labels.overall, `${data.result.overallScore?.toFixed(1) ?? '-'} / 5`, true],
+    [data.labels.completion, `${data.result.completionPercent}%`, false],
+    [data.labels.unknown, String(data.result.unknownCount), false]
+  ] as const;
+  metrics.forEach(([label, value, primary], index) => {
+    const x = margin + index * (metricWidth + metricGap);
+    pdf.setFillColor(...(primary ? soft : surface));
+    pdf.setDrawColor(...(primary ? accent : line));
+    pdf.roundedRect(x, metricY, metricWidth, 84, 10, 10, 'FD');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(7.5);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text(normalize(label.toUpperCase()), x + 13, metricY + 20);
+    pdf.setFontSize(primary ? 23 : 21);
+    pdf.setTextColor(...(primary ? accent : ink));
+    pdf.text(normalize(value), x + 13, metricY + 55);
+  });
+  y += 102;
 
   heading(data.labels.areaScores);
   for (const area of data.result.areaScores) {
-    write(
-      `${area.area}: ${area.score === null ? '-' : area.score.toFixed(1)} / 5 · ${area.answered}/${area.total}`,
-      10,
-      false,
-      3
+    ensureSpace(48);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9.5);
+    pdf.setTextColor(ink[0], ink[1], ink[2]);
+    const areaLines = pdf.splitTextToSize(normalize(area.area), 315) as string[];
+    pdf.text(areaLines, margin, y);
+    pdf.setFontSize(9);
+    pdf.setTextColor(accent[0], accent[1], accent[2]);
+    pdf.text(
+      area.score === null ? '-' : `${area.score.toFixed(1)} / 5`,
+      pageWidth - margin,
+      y,
+      { align: 'right' }
     );
+    y += Math.max(12, areaLines.length * 11) + 5;
+    const barWidth = contentWidth - 92;
+    pdf.setFillColor(235, 240, 246);
+    pdf.roundedRect(margin, y, barWidth, 7, 3.5, 3.5, 'F');
+    if (area.score !== null) {
+      pdf.setFillColor(accent[0], accent[1], accent[2]);
+      pdf.roundedRect(
+        margin,
+        y,
+        Math.max(2, (barWidth * Math.min(5, Math.max(0, area.score))) / 5),
+        7,
+        3.5,
+        3.5,
+        'F'
+      );
+    }
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text(`${area.answered}/${area.total}`, pageWidth - margin, y + 7, { align: 'right' });
+    y += 19;
   }
 
   heading(data.labels.priorityGaps);
   if (data.result.gaps.length === 0) {
-    write(data.labels.noGaps, 10, false, 4);
+    card(data.labels.noGaps);
   } else {
     for (const gap of data.result.gaps.slice(0, 15)) {
-      write(
+      card(
         `${gap.score?.toFixed(0) ?? '-'} / 5 · ${localized(gap.question.area, locale)}`,
-        10,
-        true,
-        2
+        localized(gap.question.question, locale),
+        true
       );
-      write(localized(gap.question.question, locale), 10, false, 3);
     }
   }
 
@@ -553,50 +666,40 @@ export async function downloadResultPdf(
   heading(data.labels.questions);
   data.result.scoredQuestions.forEach((item, index) => {
     const attachments = data.attachmentsByQuestion.get(item.question.id) ?? [];
-    write(
-      `${index + 1}. ${localized(item.question.question, locale)}`,
-      10,
-      true,
-      3
+    const body = [
+      `${data.labels.response}: ${answerLabel(item.answer.value, locale) || '-'}   |   ${data.labels.score}: ${item.score ?? '-'}   |   ${data.labels.weight}: x${item.question.weight}`,
+      `${localized(item.question.area, locale)}   |   Microsoft: ${item.question.microsoft}   |   ${data.labels.owner}: ${item.question.owner}`,
+      item.answer.notes ? `${data.labels.notes}: ${item.answer.notes}` : '',
+      attachments.length ? `${data.labels.attachments}: ${attachments.join(', ')}` : ''
+    ].filter(Boolean).join('\n');
+    card(
+      `${String(index + 1).padStart(2, '0')}  ${localized(item.question.question, locale)}`,
+      body
     );
-    write(
-      `${data.labels.area}: ${localized(item.question.area, locale)} · ${data.labels.response}: ${answerLabel(item.answer.value, locale) || '-'} · ${data.labels.score}: ${item.score ?? '-'} · ${data.labels.weight}: ${item.question.weight}`,
-      9,
-      false,
-      2
-    );
-    if (item.answer.notes) {
-      write(`${data.labels.notes}: ${item.answer.notes}`, 9, false, 2);
-    }
-    if (attachments.length > 0) {
-      write(
-        `${data.labels.attachments}: ${attachments.join(', ')}`,
-        9,
-        false,
-        4
-      );
-    } else {
-      y += 3;
-    }
   });
 
   if (data.actions.length > 0) {
     heading(data.labels.actionPlan);
     data.actions.forEach((action, index) => {
-      write(`${index + 1}. ${action.title}`, 10, true, 2);
-      write(
-        `${data.labels.owner}: ${action.owner ?? '-'} · ${data.labels.priority}: ${action.priority} · ${data.labels.status}: ${action.status}${action.targetDate ? ` · ${data.labels.targetDate}: ${action.targetDate}` : ''}`,
-        9,
-        false,
-        2
-      );
-      if (action.description) {
-        write(`${data.labels.description}: ${action.description}`, 9, false, 2);
-      }
-      if (action.notes) {
-        write(`${data.labels.notes}: ${action.notes}`, 9, false, 4);
-      }
+      const body = [
+        `${data.labels.owner}: ${action.owner ?? '-'}   |   ${data.labels.priority}: ${action.priority}   |   ${data.labels.status}: ${action.status}${action.targetDate ? `   |   ${data.labels.targetDate}: ${action.targetDate}` : ''}`,
+        action.description ? `${data.labels.description}: ${action.description}` : '',
+        action.notes ? `${data.labels.notes}: ${action.notes}` : ''
+      ].filter(Boolean).join('\n');
+      card(`${index + 1}. ${action.title}`, body, true);
     });
+  }
+
+  const pages = pdf.getNumberOfPages();
+  for (let page = 1; page <= pages; page += 1) {
+    pdf.setPage(page);
+    pdf.setDrawColor(line[0], line[1], line[2]);
+    pdf.line(margin, pageHeight - 32, pageWidth - margin, pageHeight - 32);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(muted[0], muted[1], muted[2]);
+    pdf.text('SelfAssessment.tech', margin, pageHeight - 18);
+    pdf.text(`${page} / ${pages}`, pageWidth - margin, pageHeight - 18, { align: 'right' });
   }
 
   pdf.save(`${assessment.id}-${run.id}.pdf`);
