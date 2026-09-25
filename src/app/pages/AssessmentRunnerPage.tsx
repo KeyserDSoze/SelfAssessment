@@ -1,12 +1,14 @@
-import { ArrowLeft, ArrowRight, BarChart3, CloudOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart3, CloudOff, Share2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { QuestionCard } from '../components/QuestionCard';
+import { ShareRunDialog } from '../components/ShareRunDialog';
 import type {
   AssessmentDefinition,
   AssessmentRun,
-  QuestionAnswer
+  QuestionAnswer,
+  Locale
 } from '../models';
 import { resolveAssessment } from '../lib/assessment-resolver';
 import { getRun, putRun } from '../lib/db';
@@ -16,10 +18,12 @@ export function AssessmentRunnerPage() {
   const { assessmentId = '', runId = '' } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale: Locale = i18n.language.startsWith('en') ? 'en' : 'it';
   const [assessment, setAssessment] = useState<AssessmentDefinition>();
   const [run, setRun] = useState<AssessmentRun>();
   const [index, setIndex] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
   const appliedQuestionLink = useRef(false);
   const autoAdvanceInFlight = useRef(false);
 
@@ -125,10 +129,20 @@ export function AssessmentRunnerPage() {
   return (
     <div className="page runner-page">
       <div className="runner-top">
-        <Link className="button ghost" to={`/assessment/${assessment.id}`}>
-          <ArrowLeft size={17} />
-          {t('actions.back')}
-        </Link>
+        <div className="runner-toolbar-actions">
+          <Link className="button ghost" to={`/assessment/${assessment.id}`}>
+            <ArrowLeft size={17} />
+            {t('actions.back')}
+          </Link>
+          <button
+            className="button secondary"
+            type="button"
+            onClick={() => setShareOpen(true)}
+          >
+            <Share2 size={17} />
+            {t('actions.share')}
+          </button>
+        </div>
         <div className="runner-status">
           <span>
             <CloudOff size={15} />
@@ -187,6 +201,14 @@ export function AssessmentRunnerPage() {
           })}
         </div>
       </section>
+
+      <ShareRunDialog
+        assessment={assessment}
+        run={run}
+        locale={locale}
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+      />
 
       <QuestionCard
         runId={run.id}
